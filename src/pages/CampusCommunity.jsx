@@ -13,10 +13,10 @@ const CampusCommunity = () => {
     const fetchPosts = async () => {
       try {
         // Get all posts from the Academic Hub category
-        const posts = await apiService.getCategoryPosts("Campus Community");
+        const posts = await apiService.getPostsByCategory("Campus Community");
 
         const authors = await Promise.all(
-          posts.map(post => apiService.getUsersID(post.AuthorID))
+          posts.map(post => apiService.getUser(post.author_id))
         );
 
         // Create a map of AuthorID to author data for easier lookup
@@ -51,7 +51,7 @@ const CampusCommunity = () => {
           <Post 
             key={post.ID}
             post={post}
-            author={postAuthors[post.AuthorID]}
+            author={postAuthors[post.author_id]}
           />
         ))}
       </div>

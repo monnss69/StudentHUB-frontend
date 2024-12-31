@@ -25,7 +25,7 @@ const Login = () => {
 
     try {
       // Call the login API
-      const response = await apiService.userLogin({
+      const response = await apiService.login({
         username: formData.username,
         password: formData.password
       });

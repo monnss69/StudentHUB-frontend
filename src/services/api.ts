@@ -1,18 +1,15 @@
 import axios from 'axios';
-import { CreateUserInput, CreatePostInput, LogIn } from './types';
+import { CreateUserInput, CreatePostInput, LoginInput } from './types';
 
-// Create an axios instance with default config
 const api = axios.create({
-    baseURL: "https://studenthub-backend.vercel.app",
-    withCredentials: true, // This is crucial for sending cookies
+    baseURL: "http://localhost:3333",
+    withCredentials: true,
     headers: {
         'Content-Type': 'application/json',
     }
 });
 
-// Add request interceptor to ensure auth header is set before each request
 api.interceptors.request.use((config) => {
-    // Get token from cookie
     const token = document.cookie
         .split("; ")
         .find((row) => row.startsWith("token="))
@@ -25,38 +22,8 @@ api.interceptors.request.use((config) => {
     return config;
 });
 
-// Export our API methods
 export const apiService = {
-    getCategoryPosts: async (category: string) => {
-        try {
-            const response = await api.get(`/${category}`);
-            return response.data;
-        } catch (error) {
-            console.error('Error fetching posts:', error);
-            throw error;
-        }
-    },
-
-    uploadPost: async (post: CreatePostInput) => {
-        try {
-            const response = await api.post('/post', post);
-            return response.data;
-        } catch (error) {
-            console.error('Error uploading post:', error);
-            throw error;
-        }
-    },
-
-    getUsersID: async (id: string) => {
-        try {
-            const response = await api.get(`/users/${id}`);
-            return response.data;
-        } catch (error) {
-            console.error('Error fetching user:', error);
-            throw error;
-        }
-    },
-
+    // User endpoints
     createUser: async (user: CreateUserInput) => {
         try {
             const response = await api.post('/users', user);
@@ -67,37 +34,121 @@ export const apiService = {
         }
     },
 
-    getCategory: async () => {
+    getUser: async (id: string) => {
         try {
-            const response = await api.get('/category');
+            const response = await api.get(`/users/${id}`);
             return response.data;
         } catch (error) {
-            console.error('Error fetching categories:', error);
+            console.error('Error fetching user:', error);
             throw error;
         }
     },
 
-    userLogin: async (user: LogIn) => {
+    getUserByUsername: async (username: string) => {
         try {
-            const response = await api.post('/auth', user);
+            const response = await api.get(`/users?username=${username}`);
+            return response.data[0]; // Returns first matching user
+        } catch (error) {
+            console.error('Error fetching user by username:', error);
+            throw error;
+        }
+    },
+
+    // Authentication endpoints
+    login: async (credentials: LoginInput) => {
+        try {
+            const response = await api.post('/login', credentials);
             return response.data;
         } catch (error) {
             console.error('Error during login:', error);
             throw error;
         }
     },
+
     logout: async () => {
         try {
-            // Clear the cookie on the server side
             const userConfirm = window.confirm('Are you sure you want to logout?');
             if (userConfirm) {
-                await api.post('/auth/logout');
+                await api.post('/logout');
                 return true;
             }
+            return false;
         } catch (error) {
             console.error('Error during logout:', error);
-            // Even if the server call fails, we still want to clear local state
-            return true;
+            throw error;
+        }
+    },
+
+    // Post endpoints
+    createPost: async (post: CreatePostInput) => {
+        try {
+            const response = await api.post('/posts', post);
+            return response.data;
+        } catch (error) {
+            console.error('Error creating post:', error);
+            throw error;
+        }
+    },
+
+    getPost: async (id: string) => {
+        try {
+            const response = await api.get(`/posts/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching post:', error);
+            throw error;
+        }
+    },
+
+    getPostsByCategory: async (category: string) => {
+        try {
+            const response = await api.get(`/posts/category/${category}`);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching posts by category:', error);
+            throw error;
+        }
+    },
+
+    updatePost: async (id: string, post: Partial<CreatePostInput>) => {
+        try {
+            const response = await api.put(`/posts/${id}`, post);
+            return response.data;
+        } catch (error) {
+            console.error('Error updating post:', error);
+            throw error;
+        }
+    },
+
+    deletePost: async (id: string) => {
+        try {
+            const response = await api.delete(`/posts/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error('Error deleting post:', error);
+            throw error;
+        }
+    },
+
+    // Comment endpoints
+    getPostComments: async (postId: string) => {
+        try {
+            const response = await api.get(`/posts/${postId}/comments`);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching post comments:', error);
+            throw error;
+        }
+    },
+
+    // Category endpoints
+    getCategories: async () => {
+        try {
+            const response = await api.get('/categories');
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+            throw error;
         }
     },
 };

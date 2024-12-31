@@ -13,10 +13,10 @@ const AcademicHub = () => {
     const fetchPosts = async () => {
       try {
         // Get all posts from the Academic Hub category
-        const posts = await apiService.getCategoryPosts("Academic Hub");
+        const posts = await apiService.getPostsByCategory("Academic Hub");
 
         const authors = await Promise.all(
-          posts.map(post => apiService.getUsersID(post.AuthorID))
+          posts.map(post => apiService.getUser(post.author_id))
         );
 
         const authorsMap = authors.reduce((map, author) => {
@@ -52,7 +52,7 @@ const AcademicHub = () => {
           <Post 
             key={post.ID}
             post={post}
-            author={postAuthors[post.AuthorID]}
+            author={postAuthors[post.author_id]}
           />
         ))}
       </div>

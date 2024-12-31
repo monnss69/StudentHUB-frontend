@@ -10,7 +10,7 @@ export interface CreateUserInput {
     passwordHash: string;
 }
 
-export interface LogIn {
+export interface LoginInput {
     username: string;
     password: string;
 }

@@ -8,7 +8,7 @@ const Post = ({ post, author }) => {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-3">
           <div>
-            <h2 className="font-semibold text-lg text-gray-800">{post.Title}</h2>
+            <h2 className="font-semibold text-lg text-gray-800">{post.title}</h2>
             <p className="text-sm text-gray-600">
               Posted by {author.username} • {new Date(post.CreatedAt).toLocaleDateString()}
             </p>
@@ -16,7 +16,7 @@ const Post = ({ post, author }) => {
         </div>
       </div>
 
-      <p className="text-gray-700 mb-4">{post.Content}</p>
+      <p className="text-gray-700 mb-4">{post.content}</p>
 
       <div className="mt-4 pt-4 border-t border-gray-100 flex items-center text-gray-600 text-sm">
         <span className="flex items-center">
