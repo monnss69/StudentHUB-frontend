@@ -1,38 +1,57 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { apiService } from '../services/api';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { apiService } from "../services/api";
+import { useAuth } from "@/provider/authProvider";
+import { jwtDecode } from "jwt-decode";
 
 const CreatePost = () => {
   const navigate = useNavigate();
+  const { token } = useAuth();
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  
   const [formData, setFormData] = useState({
-    Title: '',
-    Content: '',
-    CategoryID: ''
+    title: '',
+    content: '',
+    category_id: '',
+    author_id: ''
   });
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchInitialData = async () => {
       try {
-        const response = await apiService.getCategory();
-        setCategories(response);
+        // Decode token to get username
+        const decoded = jwtDecode(token);
+        const username = decoded.sub;
+
+        // Fetch categories
+        const categoryResponse = await apiService.getCategories();
+        setCategories(categoryResponse);
+
+        // Fetch user ID using username
+        const userResponse = await apiService.getUserByUsername(username);
+        
+        // Update form data with author_id
+        setFormData(prev => ({
+          ...prev,
+          author_id: userResponse.id // Note: assuming the backend returns lowercase 'id'
+        }));
       } catch (err) {
-        console.error('Failed to fetch categories:', err);
-        setError('Failed to load categories');
+        console.error('Failed to fetch initial data:', err);
+        setError('Failed to load necessary data');
       }
     };
 
-    fetchCategories();
-  }, []);
+    if (token) {
+      fetchInitialData();
+    }
+  }, [token]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -42,11 +61,11 @@ const CreatePost = () => {
     setError(null);
 
     try {
-      await apiService.uploadPost(formData);
-      navigate('/academic-hub');
+      await apiService.createPost(formData);
+      navigate("/post/academic-hub");
     } catch (err) {
-      console.error('Failed to create post:', err);
-      setError('Failed to create post. Please try again.');
+      console.error("Failed to create post:", err);
+      setError("Failed to create post. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -64,14 +83,17 @@ const CreatePost = () => {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label htmlFor="Title" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="Title"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Title
           </label>
           <input
             type="text"
-            id="Title"
-            name="Title"
-            value={formData.Title}
+            id="title"
+            name="title"
+            value={formData.title}
             onChange={handleChange}
             required
             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
@@ -80,19 +102,22 @@ const CreatePost = () => {
         </div>
 
         <div>
-          <label htmlFor="CategoryID" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="CategoryID"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Category
           </label>
           <select
-            id="CategoryID"
-            name="CategoryID"
-            value={formData.CategoryID}
+            id="category_id"
+            name="category_id"
+            value={formData.category_id}
             onChange={handleChange}
             required
             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
           >
             <option value="">Select a category</option>
-            {categories.map(category => (
+            {categories.map((category) => (
               <option key={category.ID} value={category.ID}>
                 {category.Name}
               </option>
@@ -101,13 +126,16 @@ const CreatePost = () => {
         </div>
 
         <div>
-          <label htmlFor="Content" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="Content"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Content
           </label>
           <textarea
-            id="Content"
-            name="Content"
-            value={formData.Content}
+            id="content"
+            name="content"
+            value={formData.content}
             onChange={handleChange}
             required
             rows={10}
@@ -124,12 +152,12 @@ const CreatePost = () => {
                      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
                      disabled:bg-blue-400 disabled:cursor-not-allowed"
           >
-            {loading ? 'Creating...' : 'Create Post'}
+            {loading ? "Creating..." : "Create Post"}
           </button>
-          
+
           <button
             type="button"
-            onClick={() => navigate('/academic-hub')}
+            onClick={() => navigate("/academic-hub")}
             className="px-6 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 
                      focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
           >
