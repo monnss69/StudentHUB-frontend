@@ -1,8 +1,10 @@
 import axios from "axios";
 import { createContext, useContext, useState, useEffect } from "react";
 
+// Create the authentication context
 const AuthContext = createContext();
 
+// Helper function to safely get cookie values
 const getCookie = (name) => {
   const cookieValue = document.cookie
     .split("; ")
@@ -11,37 +13,109 @@ const getCookie = (name) => {
   return cookieValue ? decodeURIComponent(cookieValue) : null;
 };
 
+// Helper function to set secure cookie
+const setSecureCookie = (name, value, maxAge = 86400) => {
+  document.cookie = `${name}=${value}; path=/; max-age=${maxAge}; SameSite=Lax`;
+};
+
+// Helper function to clear cookie
+const clearCookie = (name) => {
+  document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT`;
+};
+
 export const AuthProvider = ({ children }) => {
-  // Initialize token state from cookie
+  // Track loading state for initial authentication check
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // Initialize token state from both storage locations
   const [token, setToken_] = useState(() => {
-    const savedToken = getCookie("token");
-    if (savedToken) {
-      axios.defaults.withCredentials = true;
-    }
-    return savedToken;
+    return getCookie("token") || localStorage.getItem("token") || null;
   });
 
-  // Function to set the authentication token
-  const setToken = (newToken) => {
-    setToken_(newToken);
-    // Let the backend handle cookie setting
+  // Configure axios defaults
+  const configureAxios = (token) => {
+    if (token) {
+      axios.defaults.withCredentials = true;
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    } else {
+      delete axios.defaults.headers.common["Authorization"];
+    }
   };
 
-  // Configure axios
+  // Validate token and set up authentication state
+  const validateToken = async () => {
+    const savedToken = getCookie("token") || localStorage.getItem("token");
+    
+    if (!savedToken) {
+      setToken_(null);
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      // Configure axios with the saved token
+      configureAxios(savedToken);
+      
+      // If we reach here, token is valid
+      setToken_(savedToken);
+      
+      // Ensure token is stored in both places
+      localStorage.setItem("token", savedToken);
+      setSecureCookie("token", savedToken);
+    } catch (error) {
+      console.error("Token validation failed:", error);
+      // Clear authentication state if validation fails
+      setToken_(null);
+      localStorage.removeItem("token");
+      clearCookie("token");
+      configureAxios(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Token setter function that manages all storage locations
+  const setToken = (newToken) => {
+    if (newToken) {
+      // Store token in all locations
+      localStorage.setItem("token", newToken);
+      setSecureCookie("token", newToken);
+      configureAxios(newToken);
+      setToken_(newToken);
+    } else {
+      // Clear token from all locations
+      localStorage.removeItem("token");
+      clearCookie("token");
+      configureAxios(null);
+      setToken_(null);
+    }
+  };
+
+  // Run initial token validation
   useEffect(() => {
-    axios.defaults.withCredentials = true;
+    validateToken();
   }, []);
 
-  // Expose a way to check if authenticated
+  // Derived authentication state
   const isAuthenticated = Boolean(token);
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <AuthContext.Provider value={{ token, setToken, isAuthenticated }}>
+    <AuthContext.Provider value={{ 
+      token, 
+      setToken, 
+      isAuthenticated,
+      refreshAuth: validateToken
+    }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
+// Custom hook to use authentication context
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
