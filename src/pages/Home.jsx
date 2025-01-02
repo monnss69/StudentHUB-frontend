@@ -1,8 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { useAuth } from '@/provider/authProvider';
 
 const Home = () => {
+  const isAuthenticated = useAuth();
   const letterArray = "StudentHub Singapore".split("");
   
   return (
@@ -53,12 +55,14 @@ const Home = () => {
             transition={{ delay: 2.5, duration: 0.8 }}
             className="flex flex-col sm:flex-row gap-4 justify-center items-center"
           >
+            {!isAuthenticated && (
+              <>
             <button className="px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
               <Link to="/login">Log In</Link>
             </button>
             <button className="px-8 py-3 bg-white text-gray-700 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
               <Link to="/register">Sign Up</Link>
-            </button>
+            </button></>)}
           </motion.div>
         </div>
       </div>

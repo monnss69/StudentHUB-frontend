@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }) => {
   
   // Initialize token state from both storage locations
   const [token, setToken_] = useState(() => {
-    return getCookie("token") || localStorage.getItem("token") || null;
+    return getCookie("token") || null;
   });
 
   // Configure axios defaults
@@ -44,8 +44,6 @@ export const AuthProvider = ({ children }) => {
 
   // Validate token and set up authentication state
   const validateToken = async () => {
-    const savedToken = getCookie("token") || localStorage.getItem("token");
-    
     if (!savedToken) {
       setToken_(null);
       setIsLoading(false);
@@ -60,13 +58,11 @@ export const AuthProvider = ({ children }) => {
       setToken_(savedToken);
       
       // Ensure token is stored in both places
-      localStorage.setItem("token", savedToken);
       setSecureCookie("token", savedToken);
     } catch (error) {
       console.error("Token validation failed:", error);
       // Clear authentication state if validation fails
       setToken_(null);
-      localStorage.removeItem("token");
       clearCookie("token");
       configureAxios(null);
     } finally {
@@ -77,14 +73,10 @@ export const AuthProvider = ({ children }) => {
   // Token setter function that manages all storage locations
   const setToken = (newToken) => {
     if (newToken) {
-      // Store token in all locations
-      localStorage.setItem("token", newToken);
       setSecureCookie("token", newToken);
       configureAxios(newToken);
       setToken_(newToken);
     } else {
-      // Clear token from all locations
-      localStorage.removeItem("token");
       clearCookie("token");
       configureAxios(null);
       setToken_(null);
