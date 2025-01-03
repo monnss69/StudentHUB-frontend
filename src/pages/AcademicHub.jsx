@@ -1,65 +1,56 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { apiService } from '../services/api.ts';
-import Post from '../components/Post.jsx';
-import UploadButton from '../components/UploadButton.jsx';
+import React from 'react';
+import { useQuery } from "@tanstack/react-query";
+import { apiService } from '../services/api';
+import Post from '../components/Post';
+import UploadButton from '../components/UploadButton';
+import { QUERY_KEYS } from '@/constants/QueryKeys';
 
 const AcademicHub = () => {
-  const [academicPosts, setAcademicPosts] = useState([]);
-  const [postAuthors, setPostAuthors] = useState({});
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { 
+    data,
+    isLoading,
+    isError,
+    error
+  } = useQuery({
+    queryKey: QUERY_KEYS.ACADEMIC_HUB,
+    queryFn: async () => {
+      const posts = await apiService.getPostsByCategory("Academic Hub");
+      const authors = await Promise.all(
+        posts.map(post => apiService.getUser(post.author_id))
+      );
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        // Get all posts from the Academic Hub category
-        const posts = await apiService.getPostsByCategory("Academic Hub");
+      const authorsMap = authors.reduce((map, author) => {
+        map[author.id] = author;
+        return map;
+      }, {});
 
-        const authors = await Promise.all(
-          posts.map(post => apiService.getUser(post.author_id))
-        );
+      return {
+        posts,
+        authorsMap
+      };
+    },
+    staleTime: 0,              // Make data stale immediately
+    refetchOnMount: true,      // Refetch when component mounts
+    refetchOnWindowFocus: true // Refetch when window regains focus
+  });
 
-        const authorsMap = authors.reduce((map, author) => {
-          map[author.id] = author;
-          return map;
-        }, {});
-
-        setPostAuthors(authorsMap);
-        setAcademicPosts(posts);
-        setLoading(false);
-      } catch (err) {
-        console.error("Error details:", err);
-        setError(err.message || "An error occurred");
-        setLoading(false);
-      }
-    };
-
-    fetchPosts();
-  }, []);
-
-  // Loading state
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
-  if (!academicPosts?.length) return <div>No posts found</div>;
-  console.log(postAuthors);
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error: {error.message}</div>;
+  if (!data?.posts?.length) return <div>No posts found</div>;
 
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold text-gray-800 mb-6">Academic Hub</h1>
-
       <div className="space-y-4">
-        {academicPosts.map((post) => (
+        {data.posts.map((post) => (
           <Post 
             key={post.ID}
             post={post}
-            author={postAuthors[post.author_id]}
+            author={data.authorsMap[post.author_id]}
           />
         ))}
       </div>
-
       <UploadButton />
     </div>
   );
 };
-
-export default AcademicHub;

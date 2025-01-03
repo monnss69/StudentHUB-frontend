@@ -30,11 +30,10 @@ const CreatePost = () => {
 
         // Fetch user ID using username
         const userResponse = await apiService.getUserByUsername(username);
-        
-        // Update form data with author_id
+
         setFormData(prev => ({
           ...prev,
-          author_id: userResponse.id // Note: assuming the backend returns lowercase 'id'
+          author_id: userResponse.id
         }));
       } catch (err) {
         console.error('Failed to fetch initial data:', err);
@@ -62,7 +61,19 @@ const CreatePost = () => {
 
     try {
       await apiService.createPost(formData);
-      navigate("/post/academic-hub");
+      
+      const categoryName = categories.find(cat => cat.ID === formData.category_id).Name;
+      
+      if (categoryName === 'Academic Hub') {
+        queryClient.invalidateQueries(QUERY_KEYS.ACADEMIC_HUB);
+        navigate("/academic-hub");
+      } else if (categoryName === 'Campus Community') {
+        queryClient.invalidateQueries(QUERY_KEYS.CAMPUS_COMMUNITY);
+        navigate("/campus-community");
+      } else if (categoryName === 'Platform Support') {
+        queryClient.invalidateQueries(QUERY_KEYS.PLATFORM_SUPPORT);
+        navigate("/platform-support");
+      }
     } catch (err) {
       console.error("Failed to create post:", err);
       setError("Failed to create post. Please try again.");

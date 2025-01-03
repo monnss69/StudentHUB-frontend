@@ -1,63 +1,56 @@
-import React, { useState, useEffect } from 'react';
-import { apiService } from '../services/api.ts';
-import Post from '../components/Post.jsx';
-import UploadButton from '../components/UploadButton.jsx';
+import React from 'react';
+import { useQuery } from "@tanstack/react-query";
+import { apiService } from '../services/api';
+import Post from '../components/Post';
+import UploadButton from '../components/UploadButton';
+import { QUERY_KEYS } from '../constants/QueryKeys';
 
 const PlatformSupport = () => {
-  const [supportPosts, setSupportPosts] = useState([]);
-  const [postAuthors, setPostAuthors] = useState({});
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { 
+    data,
+    isLoading,
+    isError,
+    error
+  } = useQuery({
+    queryKey: QUERY_KEYS.PLATFORM_SUPPORT,
+    queryFn: async () => {
+      const posts = await apiService.getPostsByCategory("Platform Support");
+      const authors = await Promise.all(
+        posts.map(post => apiService.getUser(post.author_id))
+      );
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        // Get all posts from the Academic Hub category
-        const posts = await apiService.getPostsByCategory("Platform Support");
+      const authorsMap = authors.reduce((map, author) => {
+        map[author.id] = author;
+        return map;
+      }, {});
 
-        const authors = await Promise.all(
-          posts.map(post => apiService.getUser(post.author_id))
-        );
+      return {
+        posts,
+        authorsMap
+      };
+    },
+    staleTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true
+  });
 
-        // Create a map of AuthorID to author data for easier lookup
-        const authorsMap = authors.reduce((map, author) => {
-          map[author.id] = author;
-          return map;
-        }, {});
-
-        setPostAuthors(authorsMap);
-        setSupportPosts(posts);
-        setLoading(false);
-      } catch (err) {
-        console.error("Error details:", err);
-        setError(err.message || "An error occurred");
-        setLoading(false);
-      }
-    };
-
-    fetchPosts();
-  }, []);
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
-  if (!supportPosts?.length) return <div>No posts found</div>;
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error: {error.message}</div>;
+  if (!data?.posts?.length) return <div>No posts found</div>;
 
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold text-gray-800 mb-6">Platform Support</h1>
-
       <div className="space-y-4">
-        {supportPosts.map((post) => (
+        {data.posts.map((post) => (
           <Post 
             key={post.ID}
             post={post}
-            author={postAuthors[post.author_id]}
+            author={data.authorsMap[post.author_id]}
           />
         ))}
       </div>
-
       <UploadButton />
     </div>
   );
 };
-
-export default PlatformSupport;
