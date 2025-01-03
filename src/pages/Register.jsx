@@ -33,7 +33,7 @@ const Register = () => {
       })
       .then(() => window.alert("Account created successfully"))
       .catch((err) => window.alert(err.message));
-      
+
       navigate('/login');
     } catch (err) {
       setError(err.message || 'Failed to create account');
@@ -43,7 +43,7 @@ const Register = () => {
   };
 
   if (loading) return <LoadingState />;
-  if (error) return <ErrorState message={error.message} />;
+  if (error) return <ErrorState message={error} />;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-blue-900">

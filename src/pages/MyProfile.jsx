@@ -32,7 +32,7 @@ const MyProfile = () => {
     }, [token]);
 
     if (loading) return <LoadingState />;
-    if (error) return <ErrorState message={error.message} />;
+    if (error) return <ErrorState message={error} />;
     if (!user) return null;
 
     // Format date to be more readable
