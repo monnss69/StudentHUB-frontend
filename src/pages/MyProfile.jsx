@@ -4,12 +4,14 @@ import { apiService } from '@/services/api';
 import { jwtDecode } from 'jwt-decode';
 import ErrorState from '@/components/ErrorState';
 import { User, Mail, Calendar } from 'lucide-react';
+import LoadingState from '@/components/LoadingState';
 
 const MyProfile = () => {
     // State to hold user data matching the backend User struct
     const { token } = useAuth();
     const [user, setUser] = useState(null);
     const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -19,6 +21,7 @@ const MyProfile = () => {
                 const userData = await apiService.getUserByUsername(username);
                 setUser(userData);
                 setError(null);
+                setIsLoading(false);
             } catch (err) {
                 setError('Failed to load profile data');
                 setUser(null);
@@ -28,6 +31,7 @@ const MyProfile = () => {
         if (token) fetchUser();
     }, [token]);
 
+    if (loading) return <LoadingState />;
     if (error) return <ErrorState message={error} />;
     if (!user) return null;
 
