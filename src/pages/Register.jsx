@@ -25,7 +25,7 @@ const Register = () => {
 
     setLoading(true);
     try {
-      await aapiService
+      await apiService
       .createUser({
         username: formData.username,
         email: formData.email,
