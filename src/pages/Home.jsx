@@ -1,12 +1,12 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { useAuth } from '@/provider/authProvider';
+import React from "react";
+import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
+import { useAuth } from "@/provider/authProvider";
 
 const Home = () => {
   const isAuthenticated = useAuth();
   const letterArray = "StudentHub Singapore".split("");
-  
+
   return (
     <div className="min-h-[calc(100vh-4rem)] relative overflow-hidden bg-gradient-to-br from-gray-50 to-blue-50">
       {/* Background decorative elements */}
@@ -29,7 +29,7 @@ const Home = () => {
                 transition={{
                   duration: 0.5,
                   delay: index * 0.1,
-                  ease: "easeOut"
+                  ease: "easeOut",
                 }}
                 className="text-4xl sm:text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 pb-5"
               >
@@ -57,12 +57,14 @@ const Home = () => {
           >
             {!isAuthenticated && (
               <>
-            <button className="px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-              <Link to="/login">Log In</Link>
-            </button>
-            <button className="px-8 py-3 bg-white text-gray-700 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
-              <Link to="/register">Sign Up</Link>
-            </button></>)}
+                <button className="px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                  <Link to="/login">Log In</Link>
+                </button>
+                <button className="px-8 py-3 bg-white text-gray-700 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+                  <Link to="/register">Sign Up</Link>
+                </button>
+              </>
+            )}
           </motion.div>
         </div>
       </div>
