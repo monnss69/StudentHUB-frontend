@@ -9,6 +9,7 @@ import AcademicHub from '../pages/AcademicHub';
 import CampusCommunity from '../pages/CampusCommunity';
 import PlatformSupport from '../pages/PlatformSupport';
 import CreatePost from '../pages/CreatePost';
+import MyProfile from "../pages/MyProfile";
 
 const Routes = () => {
   const { isAuthenticated } = useAuth();
@@ -48,6 +49,10 @@ const Routes = () => {
     {
       path: "/create-post",
       element: <CreatePost />
+    },
+    {
+      path: "/my-profile",
+      element: <MyProfile />
     }
   ];
 
