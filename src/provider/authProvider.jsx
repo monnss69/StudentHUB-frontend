@@ -44,6 +44,7 @@ export const AuthProvider = ({ children }) => {
 
   // Validate token and set up authentication state
   const validateToken = async () => {
+    const savedToken = getCookie("token");
     if (!savedToken) {
       setToken_(null);
       setIsLoading(false);
