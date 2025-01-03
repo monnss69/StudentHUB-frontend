@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { apiService } from '../services/api';
 import Post from '../components/Post';
 import UploadButton from '../components/UploadButton';
-import { QUERY_KEYS } from '@/constants/QueryKeys';
+import { QUERY_KEYS } from '../constants/queryKeys.js';
 
 const AcademicHub = () => {
   const { 
