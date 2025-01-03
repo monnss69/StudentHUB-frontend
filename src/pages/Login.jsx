@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
-import { User, Lock, GraduationCap } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
-import { apiService } from '../services/api';
-import { useAuth } from '../provider/authProvider';
-import LoadingState from '@/components/LoadingState';
-import ErrorState from '@/components/ErrorState';
+import React, { useState } from "react";
+import { User, Lock, GraduationCap } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { apiService } from "../services/api";
+import { useAuth } from "../provider/authProvider";
+import LoadingState from "@/components/LoadingState";
+import ErrorState from "@/components/ErrorState";
 
 const Login = () => {
-  const [formData, setFormData] = useState({ username: '', password: '' });
+  const [formData, setFormData] = useState({ username: "", password: "" });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const navigate = useNavigate();
   const { setToken } = useAuth();
 
@@ -18,10 +18,12 @@ const Login = () => {
     setLoading(true);
     try {
       const response = await apiService.login(formData);
-      setToken(response.token);
-      navigate('/');
+      if (response) {
+        setToken(response.token);
+        navigate("/");
+      }
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to login');
+      setError(err.response?.data?.error || "Failed to login");
     } finally {
       setLoading(false);
     }
@@ -60,7 +62,9 @@ const Login = () => {
                 type="text"
                 name="username"
                 value={formData.username}
-                onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, username: e.target.value }))
+                }
                 required
                 placeholder="Username"
                 className="w-full pl-10 pr-4 py-2 bg-gray-900/50 border border-blue-900/30 rounded-lg 
@@ -77,7 +81,9 @@ const Login = () => {
                 type="password"
                 name="password"
                 value={formData.password}
-                onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, password: e.target.value }))
+                }
                 required
                 placeholder="Password"
                 className="w-full pl-10 pr-4 py-2 bg-gray-900/50 border border-blue-900/30 rounded-lg 
@@ -97,8 +103,8 @@ const Login = () => {
           </form>
 
           <div className="mt-6 text-center">
-            <Link 
-              to="/register" 
+            <Link
+              to="/register"
               className="text-blue-400 hover:text-blue-300 transition-colors"
             >
               New to StudentHub? Create an account

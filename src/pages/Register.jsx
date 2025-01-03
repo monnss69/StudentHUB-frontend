@@ -25,11 +25,15 @@ const Register = () => {
 
     setLoading(true);
     try {
-      await apiService.createUser({
+      await aapiService
+      .createUser({
         username: formData.username,
         email: formData.email,
-        password_hash: formData.password
-      });
+        password_hash: formData.password,
+      })
+      .then(() => window.alert("Account created successfully"))
+      .catch((err) => window.alert(err.message));
+      
       navigate('/login');
     } catch (err) {
       setError(err.message || 'Failed to create account');
