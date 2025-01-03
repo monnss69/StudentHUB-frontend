@@ -4,6 +4,7 @@ import { apiService } from '../services/api';
 import Post from '../components/Post';
 import UploadButton from '../components/UploadButton';
 import { QUERY_KEYS } from '../constants/queryKeys.js';
+import LoadingState from '@/components/LoadingState';
 
 const PlatformSupport = () => {
   const { 
@@ -34,7 +35,7 @@ const PlatformSupport = () => {
     refetchOnWindowFocus: true
   });
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <LoadingState />;
   if (isError) return <div>Error: {error.message}</div>;
   if (!data?.posts?.length) return <div>No posts found</div>;
 
