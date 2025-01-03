@@ -21,7 +21,7 @@ const MyProfile = () => {
                 const userData = await apiService.getUserByUsername(username);
                 setUser(userData);
                 setError(null);
-                setIsLoading(false);
+                setLoading(false);
             } catch (err) {
                 setError('Failed to load profile data');
                 setUser(null);
