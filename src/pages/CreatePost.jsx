@@ -4,8 +4,10 @@ import { apiService } from "../services/api";
 import { useAuth } from "@/provider/authProvider";
 import { jwtDecode } from "jwt-decode";
 import { QUERY_KEYS } from "@/constants/queryKeys";
+import { useQueryClient } from '@tanstack/react-query';
 
 const CreatePost = () => {
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { token } = useAuth();
   const [categories, setCategories] = useState([]);

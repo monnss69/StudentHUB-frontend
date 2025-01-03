@@ -1,13 +1,11 @@
 import React from 'react';
-import { useQuery, QueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { apiService } from '../services/api';
 import Post from '../components/Post';
 import UploadButton from '../components/UploadButton';
 import { QUERY_KEYS } from '../constants/queryKeys.js';
 
 const AcademicHub = () => {
-  const queryClient = new QueryClient();
-
   const { 
     data,
     isLoading,
