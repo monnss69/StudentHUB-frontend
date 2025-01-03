@@ -54,3 +54,5 @@ const CampusCommunity = () => {
     </div>
   );
 };
+
+export default CampusCommunity;

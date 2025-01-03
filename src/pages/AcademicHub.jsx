@@ -54,3 +54,5 @@ const AcademicHub = () => {
     </div>
   );
 };
+
+export default AcademicHub;

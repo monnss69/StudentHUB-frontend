@@ -54,3 +54,5 @@ const PlatformSupport = () => {
     </div>
   );
 };
+
+export default PlatformSupport;
