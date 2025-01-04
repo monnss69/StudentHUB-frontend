@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { apiService } from "@/services/api";
+import { useParams } from "react-router-dom";
 
 const EditPost = () => {
   const { id } = useParams();
@@ -16,7 +16,7 @@ const EditPost = () => {
     };
     if (id) fetchPost();
   }, [id]);
-  
+
   const [formData, setFormData] = useState({
     title: post.title,
     content: post.content,
