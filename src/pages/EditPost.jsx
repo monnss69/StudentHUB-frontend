@@ -16,8 +16,8 @@ const EditPost = () => {
         const postData = await apiService.getPost(id);
         setPost(postData);
         setFormData({
-            title: post.title,
-            content: post.content,
+            title: postData.title,
+            content: postData.content,
         });
       } catch (err) {
         console.error("Error fetching post:", err);
