@@ -27,6 +27,15 @@ const PostDetail = () => {
                     apiService.getUser(postData.author_id),
                     apiService.getCategory(postData.category_id)
                 ]);
+                const enhancedComments = await Promise.all(
+                    commentsData.map(async (comment) => {
+                        const userData = await apiService.getUser(comment.author_id);
+                        return {
+                            ...comment,
+                            user: userData.username
+                        };
+                    })
+                );
                 setCategory(categoryData);
                 setAuthor(authorData);
                 setPost(postData);
@@ -111,7 +120,7 @@ const PostDetail = () => {
                                 >
                                     <div className="flex items-center gap-2 mb-2 text-gray-400">
                                         <User className="text-blue-400" size={16} />
-                                        <span>{apiService.getUser(comment.author_id).username || 'Unknown'}</span>
+                                        <span>{comment.user}</span>
                                         <span className="text-gray-600">•</span>
                                         <span className="text-sm">
                                             {formatDate(comment.created_at)}
