@@ -23,8 +23,10 @@ const PostDetail = () => {
                     apiService.getPost(id),
                     apiService.getPostComments(id)
                 ]);
-                const authorData = apiService.getUser(postData.author_id);
-                const categoryData = apiService.getCategory(postData.category_id);
+                const [authorData, categoryData] = await Promise.all([
+                    apiService.getUser(postData.author_id),
+                    apiService.getCategory(postData.category_id)
+                ]);
                 setCategory(categoryData);
                 setAuthor(authorData);
                 setPost(postData);
