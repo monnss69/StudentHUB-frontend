@@ -20,7 +20,7 @@ const Post = ({ post, author }) => {
                 <span className="text-blue-400">{author.username}</span>
                 {" • "}
                 <span className="text-gray-500">
-                  {new Date(post.CreatedAt).toLocaleDateString()}
+                  {new Date(post.created_at).toLocaleDateString()}
                 </span>
               </p>
             </div>
