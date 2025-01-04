@@ -20,12 +20,10 @@ const MyProfile = () => {
             try {
                 const decoded = jwtDecode(token);
                 const username = decoded.sub;
-                const userData = await Promise(
-                    await apiService.getUserByUsername(username),
-                );
-                const userPosts = await Promise(
-                    await apiService.getUserPosts(userData.id),
-                );
+                // Simply await the API calls directly
+                const userData = await apiService.getUserByUsername(username);
+                const userPosts = await apiService.getUserPosts(userData.id);
+                
                 setUser(userData);
                 setPosts(userPosts);
                 setError(null);
@@ -33,6 +31,7 @@ const MyProfile = () => {
             } catch (err) {
                 setError('Failed to load profile data');
                 setUser(null);
+                setLoading(false);
             }
         };
 
