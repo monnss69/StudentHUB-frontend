@@ -11,6 +11,7 @@ import PlatformSupport from '../pages/PlatformSupport';
 import CreatePost from '../pages/CreatePost';
 import MyProfile from "../pages/MyProfile";
 import PostDetail from "../components/PostDetail";
+import EditPost from "@/pages/EditPost";
 
 const Routes = () => {
   const { isAuthenticated } = useAuth();
@@ -58,6 +59,10 @@ const Routes = () => {
     {
       path: "/my-profile",
       element: <MyProfile />
+    },
+    {
+      path: "/edit-post/:id",
+      element: <EditPost />
     }
   ];
 
