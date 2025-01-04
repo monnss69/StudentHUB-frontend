@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { CreateUserInput, CreatePostInput, LoginInput } from './types';
+import { get } from 'http';
 
 const api = axios.create({
     baseURL: "https://studenthub-backend.vercel.app",
@@ -151,4 +152,13 @@ export const apiService = {
             throw error;
         }
     },
+    getCategory: async (id: string) => {
+        try {
+            const response = await api.get(`/categories/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching category:', error);
+            throw error;
+        }
+    }
 };

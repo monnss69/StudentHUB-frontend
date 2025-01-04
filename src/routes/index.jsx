@@ -47,6 +47,10 @@ const Routes = () => {
       element: <PlatformSupport />
     },
     {
+      path: '/posts/:id',
+      element: <PostDetail />
+    },
+    {
       path: "/create-post",
       element: <CreatePost />
     },
