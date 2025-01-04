@@ -1,8 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { apiService } from "@/services/api";
 
-const EditPost = (post) => {
+const EditPost = () => {
+  const { id } = useParams();
+  const [post, setPost] = useState(null);
+  useEffect(() => {
+    const fetchPost = async () => {
+      try {
+        const postData = await apiService.getPost(id);
+        setPost(postData);
+      } catch (err) {
+        console.error("Error fetching post:", err);
+      }
+    };
+    if (id) fetchPost();
+  }, [id]);
+  
   const [formData, setFormData] = useState({
     title: post.title,
     content: post.content,
