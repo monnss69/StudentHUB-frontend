@@ -39,7 +39,7 @@ const PostDetail = () => {
                 setCategory(categoryData);
                 setAuthor(authorData);
                 setPost(postData);
-                setComments(commentsData);
+                setComments(enhancedComments);
             } catch (err) {
                 console.error('Error fetching post:', err);
                 setError(err.message || 'Failed to load post');
