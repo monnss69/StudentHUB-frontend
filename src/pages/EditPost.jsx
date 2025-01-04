@@ -5,11 +5,20 @@ import { useParams } from "react-router-dom";
 const EditPost = () => {
   const { id } = useParams();
   const [post, setPost] = useState(null);
+  const [formData, setFormData] = useState({
+    title: '',
+    content: '',
+  });
+
   useEffect(() => {
     const fetchPost = async () => {
       try {
         const postData = await apiService.getPost(id);
         setPost(postData);
+        setFormData({
+            title: post.title,
+            content: post.content,
+        });
       } catch (err) {
         console.error("Error fetching post:", err);
       }
@@ -17,10 +26,6 @@ const EditPost = () => {
     if (id) fetchPost();
   }, [id]);
 
-  const [formData, setFormData] = useState({
-    title: post.title,
-    content: post.content,
-  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
