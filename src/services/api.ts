@@ -55,6 +55,16 @@ export const apiService = {
         }
     },
 
+    getUserPosts: async (id: string) => {
+        try {
+            const response = await api.get(`/users/${id}/posts`);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching user posts:', error);
+            throw error;
+        }
+    },
+
     // Authentication endpoints
     login: async (credentials: LoginInput) => {
         try {
