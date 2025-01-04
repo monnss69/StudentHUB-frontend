@@ -20,10 +20,12 @@ const MyProfile = () => {
             try {
                 const decoded = jwtDecode(token);
                 const username = decoded.sub;
-                const [userData, userPosts] = await Promise.all([
+                const userData = await Promise(
                     apiService.getUserByUsername(username),
-                    apiService.getUserPosts(username)
-                ]);
+                );
+                const userPosts = await Promise(
+                    apiService.getUserPosts(userData.id),
+                );
                 setUser(userData);
                 setPosts(userPosts);
                 setError(null);
