@@ -10,6 +10,7 @@ import CampusCommunity from '../pages/CampusCommunity';
 import PlatformSupport from '../pages/PlatformSupport';
 import CreatePost from '../pages/CreatePost';
 import MyProfile from "../pages/MyProfile";
+import PostDetail from "../components/PostDetail";
 
 const Routes = () => {
   const { isAuthenticated } = useAuth();
