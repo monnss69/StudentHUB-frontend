@@ -28,9 +28,7 @@ const Logout = () => {
           .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
       });
 
-      // Force a page reload to clear any remaining state
-      window.location.href = "/";
-      navigate("/");
+      navigate("/", { replace: true });
     } catch (error) {
       console.error("Logout error:", error);
     }

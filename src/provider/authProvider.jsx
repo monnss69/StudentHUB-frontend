@@ -26,6 +26,19 @@ export const AuthProvider = ({ children }) => {
     return getCookie("token") || null;
   });
 
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const currentToken = getCookie("token");
+      if (!currentToken) {
+        setToken_(null);
+        configureAxios(null);
+      }
+    };
+  
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+  
   // Configure axios defaults
   const configureAxios = (token) => {
     if (token) {
