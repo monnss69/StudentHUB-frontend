@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { CreateUserInput, CreatePostInput, LoginInput } from './types';
+import { CreateUserInput, CreatePostInput, LoginInput, CreateCommentInput } from './types';
 import { get } from 'http';
 
 const api = axios.create({
@@ -148,6 +148,16 @@ export const apiService = {
             return response.data;
         } catch (error) {
             console.error('Error fetching post comments:', error);
+            throw error;
+        }
+    },
+
+    createComment: async (postId: string, comment: CreateCommentInput) => {
+        try {
+            const response = await api.post(`posts/${postId}/comments`, comment);
+            return response.data;
+        } catch (error) {
+            console.error('Error creating comment:', error);
             throw error;
         }
     },

@@ -8,6 +8,10 @@ import LoadingState from '@/components/LoadingState';
 const PostDetail = () => {
     const { id } = useParams();
     const [post, setPost] = useState(null);
+    const [newComment, setNewComment] = useState({
+        content: '',
+        author_id: null
+    });
     const [comments, setComments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -38,6 +42,10 @@ const PostDetail = () => {
                 );
                 setCategory(categoryData);
                 setAuthor(authorData);
+                setNewComment({
+                    ...newComment,
+                    author_id: authorData.id
+                });
                 setPost(postData);
                 setComments(enhancedComments);
             } catch (err) {
@@ -50,6 +58,25 @@ const PostDetail = () => {
 
         if (id) fetchPostData();
     }, [id]);
+
+    const handleChange = (e) => {
+        e.preventDefault();
+        const newCommentData = {
+            ...newComment,
+            content: e.target.value
+        };
+        setNewComment(newCommentData);
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            apiService.createComment(id, newComment);
+            setNewComment('');
+        } catch (err) {
+            console.error('Error posting comment:', err);
+        }
+    };
 
     if (loading) return <LoadingState />;
     if (error) return <ErrorState message={error} />;
@@ -102,6 +129,32 @@ const PostDetail = () => {
                         {/* Post Content */}
                         <div className="prose prose-invert max-w-none">
                             <p className="text-gray-200 whitespace-pre-wrap">{post.content}</p>
+                        </div>
+                    </div>
+
+                    <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl shadow-xl border border-blue-900/30 p-6 mb-8">
+                        <h2 className="text-2xl font-bold text-blue-200 mb-4 flex items-center gap-2">
+                            Add a Comment
+                        </h2>
+                        <div className="space-y-4">
+                            <textarea
+                                name='newComment'
+                                value={newComment}
+                                onChange={handleChange}
+                                placeholder="Write your comment here..."
+                                className="w-full bg-gray-900/50 text-white px-4 py-3 rounded-lg border border-blue-900/20 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent min-h-24 resize-y"
+                                required
+                            />
+                            <div className="flex justify-end">
+                                <button 
+                                    className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-lg transition-colors duration-200 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    disabled={!newComment.trim()}
+                                    onSubmit={handleSubmit}
+                                >
+                                    <MessageCircle size={18} />
+                                    Post Comment
+                                </button>
+                            </div>
                         </div>
                     </div>
 

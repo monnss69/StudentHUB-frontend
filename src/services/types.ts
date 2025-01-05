@@ -10,6 +10,11 @@ export interface CreateUserInput {
     passwordHash: string;
 }
 
+export interface CreateCommentInput {
+    author_id: string;
+    content: string;
+}
+
 export interface LoginInput {
     username: string;
     password: string;

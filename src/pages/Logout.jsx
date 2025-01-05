@@ -28,9 +28,6 @@ const Logout = () => {
           .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
       });
 
-      // Clear localStorage if you're using it
-      localStorage.clear();
-
       // Force a page reload to clear any remaining state
       window.location.href = "/";
       navigate("/");

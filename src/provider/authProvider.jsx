@@ -1,10 +1,8 @@
 import axios from "axios";
 import { createContext, useContext, useState, useEffect } from "react";
 
-// Create the authentication context
 const AuthContext = createContext();
 
-// Helper function to safely get cookie values
 const getCookie = (name) => {
   const cookieValue = document.cookie
     .split("; ")
@@ -13,21 +11,17 @@ const getCookie = (name) => {
   return cookieValue ? decodeURIComponent(cookieValue) : null;
 };
 
-// Helper function to set secure cookie
 const setSecureCookie = (name, value, maxAge = 86400) => {
   document.cookie = `${name}=${value}; path=/; max-age=${maxAge}; SameSite=Lax`;
 };
 
-// Helper function to clear cookie
 const clearCookie = (name) => {
   document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT`;
 };
 
 export const AuthProvider = ({ children }) => {
-  // Track loading state for initial authentication check
   const [isLoading, setIsLoading] = useState(true);
   
-  // Initialize token state from both storage locations
   const [token, setToken_] = useState(() => {
     return getCookie("token") || null;
   });
@@ -52,17 +46,11 @@ export const AuthProvider = ({ children }) => {
     }
 
     try {
-      // Configure axios with the saved token
       configureAxios(savedToken);
-      
-      // If we reach here, token is valid
       setToken_(savedToken);
-      
-      // Ensure token is stored in both places
       setSecureCookie("token", savedToken);
     } catch (error) {
       console.error("Token validation failed:", error);
-      // Clear authentication state if validation fails
       setToken_(null);
       clearCookie("token");
       configureAxios(null);
