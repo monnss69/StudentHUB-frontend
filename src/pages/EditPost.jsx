@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { apiService } from "@/services/api";
 import { useParams } from "react-router-dom";
 
@@ -9,6 +10,7 @@ const EditPost = () => {
     title: '',
     content: '',
   });
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -31,6 +33,7 @@ const EditPost = () => {
     e.preventDefault();
     try {
       await apiService.updatePost(post.id, formData);
+      navigate('/posts/' + post.id);
     } catch (err) {
       console.error("Error updating post:", err);
     }
