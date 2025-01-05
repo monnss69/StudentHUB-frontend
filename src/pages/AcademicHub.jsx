@@ -1,7 +1,7 @@
 import React from 'react';
 import { useQuery } from "@tanstack/react-query";
 import { apiService } from '../services/api';
-import PostListing from '../components/PostListing';
+import Post from '../components/Post';
 import UploadButton from '../components/UploadButton';
 import { QUERY_KEYS } from '../constants/queryKeys.js';
 import LoadingState from '@/components/LoadingState';
@@ -67,7 +67,7 @@ const AcademicHub = () => {
         
         <div className="space-y-6">
           {data.posts.map((post) => (
-            <PostListing 
+            <Post 
               key={post.ID}
               post={post}
               author={data.authorsMap[post.author_id]}

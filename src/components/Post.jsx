@@ -1,8 +1,24 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import { Link } from "react-router-dom";
 import { apiService } from "@/services/api";
 
 const Post = ({ post, author }) => {
+  // Create a state to store comments
+  const [comments, setComments] = useState([]);
+
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const fetchedComments = await apiService.getPostComments(post.id);
+        setComments(fetchedComments);
+      } catch (error) {
+        console.error("Failed to fetch comments:", error);
+      }
+    };
+
+    fetchComments();
+  }, [post.id]); // Only re-fetch if post.id changes
+
   return (
     <Link to={`/posts/${post.id}`} className="block mb-6">
       <div
@@ -45,7 +61,7 @@ const Post = ({ post, author }) => {
                 d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
               />
             </svg>
-            <span>{apiService.getPostComments(post.id).length}</span>
+            <span>{comments.length} comments</span>
           </span>
         </div>
       </div>
