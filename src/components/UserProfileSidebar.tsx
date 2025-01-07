@@ -2,7 +2,7 @@ import React from 'react'
 import { User, Calendar, BookOpen } from 'lucide-react';
 import { UserProfileSidebarProps } from '../types';
 
-const UserProfileSidebar: React.FC<UserProfileSidebarProps> = ({ userData, postsCount }) => {
+const UserProfileSidebar: React.FC<UserProfileSidebarProps> = ({ userData, postsCount, category }) => {
     // Type-safe date formatting function
     const formatDate = (dateString: string): string => {
       return new Date(dateString).toLocaleDateString('en-US', {
@@ -36,7 +36,7 @@ const UserProfileSidebar: React.FC<UserProfileSidebarProps> = ({ userData, posts
           <div className="flex items-center gap-3 p-3 bg-gray-900/40 rounded-lg">
             <BookOpen className="text-blue-400" size={20} />
             <div>
-              <p className="text-sm text-blue-200/70">Academic Posts</p>
+              <p className="text-sm text-blue-200/70">{category} Posts</p>
               <p className="text-blue-100">{postsCount}</p>
             </div>
           </div>

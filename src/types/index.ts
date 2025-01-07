@@ -50,6 +50,10 @@ export interface Comment extends BaseEntity {
     post_id: string;
 }
 
+export interface CommentWithUser extends Comment {
+    user: string
+}
+
 export interface CreateCommentInput {
     content: string;
     author_id: string;
@@ -88,6 +92,7 @@ export interface PostProps {
 export interface UserProfileSidebarProps {
     userData: UserData;
     postsCount: number;
+    category: string;
 }
 
 export interface ProtectedRouteProps {

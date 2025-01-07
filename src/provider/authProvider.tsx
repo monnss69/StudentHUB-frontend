@@ -1,9 +1,10 @@
+import { AuthContextType } from "@/types";
 import axios from "axios";
 import { createContext, useContext, useState, useEffect } from "react";
 
-const AuthContext = createContext();
+const AuthContext = createContext<AuthContextType | null>(null);
 
-const getCookie = (name) => {
+const getCookie = (name: string): string | null => {
   const cookieValue = document.cookie
     .split("; ")
     .find((row) => row.startsWith(`${name}=`))
@@ -11,19 +12,19 @@ const getCookie = (name) => {
   return cookieValue ? decodeURIComponent(cookieValue) : null;
 };
 
-const setSecureCookie = (name, value, maxAge = 86400) => {
+const setSecureCookie = (name: string, value: string, maxAge = 86400): void => {
   document.cookie = `${name}=${value}; path=/; max-age=${maxAge}; SameSite=Lax`;
 };
 
-const clearCookie = (name) => {
+const clearCookie = (name: string): void => {
   document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT`;
 };
 
-export const AuthProvider = ({ children }) => {
-  const [isLoading, setIsLoading] = useState(true);
+export const AuthProvider = ({ children }: {children: React.ReactNode}) => {
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   
-  const [token, setToken_] = useState(() => {
-    return getCookie("token") || null;
+  const [token, setToken_] = useState<string | null>(() => {
+    return getCookie("token");
   });
 
   useEffect(() => {
@@ -40,7 +41,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
   
   // Configure axios defaults
-  const configureAxios = (token) => {
+  const configureAxios = (token: string | null): void => {
     if (token) {
       axios.defaults.withCredentials = true;
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
@@ -50,7 +51,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Validate token and set up authentication state
-  const validateToken = async () => {
+  const validateToken = async (): Promise<void> => {
     const savedToken = getCookie("token");
     if (!savedToken) {
       setToken_(null);
@@ -73,7 +74,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Token setter function that manages all storage locations
-  const setToken = (newToken) => {
+  const setToken = (newToken: string | null): void => {
     if (newToken) {
       setSecureCookie("token", newToken);
       configureAxios(newToken);

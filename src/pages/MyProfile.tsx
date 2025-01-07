@@ -1,48 +1,46 @@
-import { useAuth } from '@/provider/authProvider';
-import React, { useState, useEffect } from 'react';
+import { useAuth } from '@/provider/authProvider.tsx';
+import { useState, useEffect } from 'react';
 import { apiService } from '@/services/api';
 import { jwtDecode } from 'jwt-decode';
-import ErrorState from '@/components/ErrorState';
 import { User, Mail, Calendar, Edit } from 'lucide-react';
-import LoadingState from '@/components/LoadingState';
+import LoadingState from '@/components/LoadingState.tsx';
 import { useNavigate } from 'react-router-dom';
+import { DecodedToken, Post, UserData } from '@/types';
 
 const MyProfile = () => {
     const { token } = useAuth();
     const navigate = useNavigate();
-    const [user, setUser] = useState(null);
-    const [posts, setPosts] = useState([]);
-    const [error, setError] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [user, setUser] = useState<UserData | null>(null);
+    const [posts, setPosts] = useState<Post[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
         const fetchUserAndPosts = async () => {
             try {
-                const decoded = jwtDecode(token);
-                const username = decoded.sub;
-                // Simply await the API calls directly
-                const userData = await apiService.getUserByUsername(username);
-                const userPosts = await apiService.getUserPosts(userData.id);
+                const decoded: DecodedToken | null = token ? jwtDecode(token) : null;
+                const username = decoded?.sub;
+                if (!username) throw new Error('Invalid token data');
+                const userData: UserData = await apiService.getUserByUsername(username);
+                const userPosts: Post[] = await apiService.getUserPosts(userData.id);
                 
                 setUser(userData);
                 setPosts(userPosts);
-                setError(null);
                 setLoading(false);
             } catch (err) {
-                setError('Failed to load profile data');
                 setUser(null);
                 setLoading(false);
+                console.error('Error fetching user data:', err);
             }
         };
 
         if (token) fetchUserAndPosts();
     }, [token]);
 
-    const handleEditPost = (postId) => {
+    const handleEditPost = (postId: string) => {
         navigate(`/edit-post/${postId}`);
     };
 
-    const formatDate = (dateString) => {
+    const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',

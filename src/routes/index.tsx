@@ -1,18 +1,18 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import { useAuth } from "../provider/authProvider";
-import { ProtectedRoute } from "./ProtectedRoute";
-import Layout from '../components/Layout';
-import Home from '../pages/Home';
-import Login from '../pages/Login';
-import Register from '../pages/Register';
+import { useAuth } from "../provider/authProvider.tsx";
+import { ProtectedRoute } from "./ProtectedRoute.tsx";
+import Layout from '../components/Layout.tsx';
+import Home from '../pages/Home.tsx';
+import Login from '../pages/Login.tsx';
+import Register from '../pages/Register.tsx';
 import AcademicHub from '../pages/AcademicHub.tsx';
 import CampusCommunity from '../pages/CampusCommunity.tsx';
 import PlatformSupport from '../pages/PlatformSupport.tsx';
 import CreatePost from '../pages/CreatePost.tsx';
-import MyProfile from "../pages/MyProfile";
-import PostDetail from "../components/PostDetail";
-import EditPost from "@/pages/EditPost";
-import ErrorState from "@/components/ErrorState"; // Make sure to import ErrorState
+import MyProfile from "../pages/MyProfile.tsx";
+import PostDetail from "../components/PostDetail.tsx";
+import EditPost from "@/pages/EditPost.tsx";
+import ErrorState from "@/components/ErrorState.tsx";
 
 const Routes = () => {
   const { isAuthenticated } = useAuth();
@@ -21,7 +21,7 @@ const Routes = () => {
     {
       path: "/",
       element: <Home />,
-      errorElement: <ErrorState message="Something went wrong" /> // Add default error element
+      errorElement: <ErrorState message="Something went wrong" />,
     }
   ];
 

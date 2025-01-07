@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { User, Lock, Mail, GraduationCap } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { apiService } from '../services/api';
-import LoadingState from '@/components/LoadingState';
-import ErrorState from '@/components/ErrorState';
+import LoadingState from '@/components/LoadingState.tsx';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -12,14 +11,13 @@ const Register = () => {
     password: '',
     confirmPassword: ''
   });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      window.alert('Passwords do not match');
       return;
     }
 
@@ -36,7 +34,7 @@ const Register = () => {
 
       navigate('/login');
     } catch (err) {
-      setError(err.message || 'Failed to create account');
+      console.error('Error creating user:', err);
     } finally {
       setLoading(false);
     }

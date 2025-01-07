@@ -2,9 +2,8 @@ import React, { useState } from "react";
 import { User, Lock, GraduationCap } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { apiService } from "../services/api";
-import { useAuth } from "../provider/authProvider";
-import LoadingState from "@/components/LoadingState";
-import ErrorState from "@/components/ErrorState";
+import { useAuth } from "../provider/authProvider.tsx";
+import LoadingState from "@/components/LoadingState.tsx";
 import { LoginInput } from "@/types";
 
 const Login = () => {

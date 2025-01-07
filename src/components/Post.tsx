@@ -1,10 +1,11 @@
-import React, {useState, useEffect} from "react";
+import {useState, useEffect} from "react";
 import { Link } from "react-router-dom";
 import { apiService } from "@/services/api";
+import { Post as PostType, UserData, Comment } from "@/types";
 
-const Post = ({ post, author }) => {
+const Post = ({ post, author }: {post: PostType, author: UserData}) => {
   // Create a state to store comments
-  const [comments, setComments] = useState([]);
+  const [comments, setComments] = useState<Comment[]>([]);
 
   useEffect(() => {
     const fetchComments = async () => {

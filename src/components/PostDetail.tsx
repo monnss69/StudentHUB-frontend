@@ -2,31 +2,39 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { apiService } from "../services/api";
 import { User, Calendar, Tag, MessageCircle } from "lucide-react";
-import ErrorState from "@/components/ErrorState";
-import LoadingState from "@/components/LoadingState";
-import { useAuth } from "@/provider/authProvider";
+import LoadingState from "@/components/LoadingState.tsx";
+import { useAuth } from "@/provider/authProvider.tsx";
 import {jwtDecode} from "jwt-decode";
+import { CommentWithUser, Post, UserData, DecodedToken, Category } from "@/types";
 
 const PostDetail = () => {
   const { id } = useParams();
-  const [post, setPost] = useState(null);
+  if (!id) throw new Error("Invalid post ID");
+  const [post, setPost] = useState<Post | null>(null);
   const [newComment, setNewComment] = useState({
     content: "",
-    author_id: null,
+    author_id: "",
   });
-  const [comments, setComments] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [author, setAuthor] = useState(null);
-  const [category, setCategory] = useState(null);
+  const [comments, setComments] = useState<CommentWithUser[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [author, setAuthor] = useState<UserData | null>(null);
+  const [category, setCategory] = useState<Category | null>(null);
   const { token } = useAuth();
 
   useEffect(() => {
     const fetchAuthorID = async () => {
-      const decoded = jwtDecode(token);
-      const username = decoded.sub;
+      const decoded: DecodedToken | null = token ? jwtDecode(token) : null;
+      const username = decoded?.sub;
+      if (!username) {
+        throw new Error("Failed to decode username from token");
+      }
+
       const user = await apiService.getUserByUsername(username);
       const authorID = user.id;
+      if (!authorID) {
+        throw new Error("Failed to fetch author ID");
+      }
+
       setNewComment({ ...newComment, author_id: authorID });
     };
     if (token) fetchAuthorID();
@@ -46,7 +54,7 @@ const PostDetail = () => {
           apiService.getCategory(postData.category_id),
         ]);
         const enhancedComments = await Promise.all(
-          commentsData.map(async (comment) => {
+          commentsData.map(async (comment: CommentWithUser) => {
             const userData = await apiService.getUser(comment.author_id);
             return {
               ...comment,
@@ -54,13 +62,13 @@ const PostDetail = () => {
             };
           })
         );
+        
         setCategory(categoryData);
         setAuthor(authorData);
         setPost(postData);
         setComments(enhancedComments);
       } catch (err) {
         console.error("Error fetching post:", err);
-        setError(err.message || "Failed to load post");
       } finally {
         setLoading(false);
       }
@@ -69,7 +77,7 @@ const PostDetail = () => {
     if (id) fetchPostData();
   }, [id]);
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLFormElement | HTMLTextAreaElement>) => {
     e.preventDefault();
     const newCommentData = {
       ...newComment,
@@ -78,25 +86,26 @@ const PostDetail = () => {
     setNewComment(newCommentData);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       await apiService.createComment(id, newComment);
       window.location.reload();
-      setNewComment("");
+      setNewComment({ ...newComment, content: "" });
     } catch (err) {
       console.error("Error posting comment:", err);
     }
   };
 
   if (loading) return <LoadingState />;
-  if (error) return <ErrorState message={error} />;
-  if (!post) return null;
+  if (!post) throw new Error("Post not found");
+  if (!author) throw new Error("Author not found");
+  if (!category) throw new Error("Category not found");
 
   const isCommentEmpty = !newComment?.content?.trim();
 
   // Format date to be more readable
-  const formatDate = (dateString) => {
+  const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
@@ -131,7 +140,7 @@ const PostDetail = () => {
                 <Calendar className="text-blue-400" size={20} />
                 <span>{formatDate(post.created_at)}</span>
               </div>
-              {post.category && (
+              {post.category_id && (
                 <div className="flex items-center gap-2">
                   <Tag className="text-blue-400" size={20} />
                   <span>{category.name}</span>

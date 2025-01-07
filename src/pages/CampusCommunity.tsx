@@ -1,13 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { apiService } from "../services/api";
-import Post from "../components/Post";
-import UploadButton from "../components/UploadButton";
+import Post from "../components/Post.tsx";
+import UploadButton from "../components/UploadButton.tsx";
 import { QUERY_KEYS } from "../constants/queryKeys";
-import LoadingState from "@/components/LoadingState";
-import { useAuth } from "@/provider/authProvider";
+import LoadingState from "@/components/LoadingState.tsx";
+import { useAuth } from "@/provider/authProvider.tsx";
 import { jwtDecode } from "jwt-decode";
 import { UserData, Post as PostType, DecodedToken } from "../types";
-import UserProfileSidebar from "@/components/UserProfileSidebar";
+import UserProfileSidebar from "@/components/UserProfileSidebar.tsx";
 
 // Define interface for the data structure returned by the query
 interface QueryData {
@@ -104,6 +104,7 @@ const CampusCommunity: React.FC = () => {
               <UserProfileSidebar
                 userData={data.currentUser}
                 postsCount={userPostsCount}
+                category="Community"
               />
             </div>
           )}

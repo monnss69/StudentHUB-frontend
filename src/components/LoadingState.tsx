@@ -1,7 +1,5 @@
 import { BarLoader } from "react-spinner-animated";
-
 import "react-spinner-animated/dist/index.css";
-import React from "react";
 
 const LoadingState = () => {
   return (

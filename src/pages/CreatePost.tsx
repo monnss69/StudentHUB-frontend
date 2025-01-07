@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { QueryClient, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { apiService } from "../services/api";
-import { useAuth } from "@/provider/authProvider";
+import { useAuth } from "@/provider/authProvider.tsx";
 import { jwtDecode } from "jwt-decode";
 import { QUERY_KEYS } from "@/constants/queryKeys";
-import LoadingState from "@/components/LoadingState";
+import LoadingState from "@/components/LoadingState.tsx";
 import { Category, CreatePostInput, DecodedToken, UserData } from "@/types";
 
 const CreatePost = () => {
@@ -25,8 +25,8 @@ const CreatePost = () => {
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
-        const decoded: DecodedToken = jwtDecode(token);
-        const username: string = decoded.sub;
+        const decoded: DecodedToken | null = token ? jwtDecode(token) : null;
+        const username = decoded?.sub;
         if (!username) throw new Error('Error fetching user data');
 
         const [categoryResponse, userResponse] : [Category[], UserData] = await Promise.all([
