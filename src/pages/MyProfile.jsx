@@ -51,7 +51,6 @@ const MyProfile = () => {
     };
 
     if (loading) return <LoadingState />;
-    if (error) return <ErrorState message={error} />;
     if (!user) return null;
 
     return (

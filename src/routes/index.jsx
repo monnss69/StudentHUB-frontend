@@ -12,57 +12,67 @@ import CreatePost from '../pages/CreatePost';
 import MyProfile from "../pages/MyProfile";
 import PostDetail from "../components/PostDetail";
 import EditPost from "@/pages/EditPost";
+import ErrorState from "@/components/ErrorState"; // Make sure to import ErrorState
 
 const Routes = () => {
   const { isAuthenticated } = useAuth();
 
-  // Let's organize our routes more clearly
   const publicRoutes = [
     {
       path: "/",
-      element: <Home />
+      element: <Home />,
+      errorElement: <ErrorState message="Something went wrong" /> // Add default error element
     }
   ];
 
   const authRoutes = [
     {
       path: "/login",
-      element: <Login />
+      element: <Login />,
+      errorElement: <ErrorState message="Authentication error" />
     },
     {
       path: "/register",
-      element: <Register />
+      element: <Register />,
+      errorElement: <ErrorState message="Registration error" />
     }
   ];
 
   const protectedRoutes = [
     {
       path: "/post/academic-hub",
-      element: <AcademicHub />
+      element: <AcademicHub />,
+      errorElement: <ErrorState message="Failed to load Academic Hub" />
     },
     {
       path: "/post/campus-community",
-      element: <CampusCommunity />
+      element: <CampusCommunity />,
+      errorElement: <ErrorState message="Failed to load Campus Community" />
     },
     {
       path: "/post/platform-support",
-      element: <PlatformSupport />
+      element: <PlatformSupport />,
+      errorElement: <ErrorState message="Failed to load Platform Support" />
     },
     {
       path: '/posts/:id',
-      element: <PostDetail />
+      element: <PostDetail />,
+      errorElement: <ErrorState message="Failed to load post" />
     },
     {
       path: "/create-post",
-      element: <CreatePost />
+      element: <CreatePost />,
+      errorElement: <ErrorState message="Failed to create post" />
     },
     {
       path: "/my-profile",
-      element: <MyProfile />
+      element: <MyProfile />,
+      errorElement: <ErrorState message="Failed to load profile" />
     },
     {
       path: "/edit-post/:id",
-      element: <EditPost />
+      element: <EditPost />,
+      errorElement: <ErrorState message="Failed to edit post" />
     }
   ];
 
@@ -70,6 +80,7 @@ const Routes = () => {
     {
       path: "/",
       element: <Layout />,
+      errorElement: <ErrorState message="Application error" />, // Add root error element
       children: [
         // Public routes are always available
         ...publicRoutes,
@@ -80,6 +91,7 @@ const Routes = () => {
         // Protected routes wrapped in ProtectedRoute component
         {
           element: <ProtectedRoute />,
+          errorElement: <ErrorState message="Protected route error" />, // Add error element for protected routes
           children: protectedRoutes
         }
       ]

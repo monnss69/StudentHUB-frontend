@@ -42,12 +42,6 @@ const CampusCommunity = () => {
     );
   }
 
-  if (isError) {
-    return (
-      <ErrorState message={error.message} />
-    );
-  }
-
   if (!data?.posts?.length) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-blue-900 p-8">

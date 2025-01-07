@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { CreateUserInput, CreatePostInput, LoginInput, CreateCommentInput } from './types';
+import { CreateUserInput, CreatePostInput, LoginInput, CreateCommentInput } from '../types';
 import { get } from 'http';
 
 const api = axios.create({
@@ -80,6 +80,7 @@ export const apiService = {
         try {
             const userConfirm = window.confirm('Are you sure you want to logout?');
             if (userConfirm) {
+                // Just make the request - the cookie will be sent automatically
                 await api.post('/logout');
                 return true;
             }

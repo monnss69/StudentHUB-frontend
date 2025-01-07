@@ -30,7 +30,6 @@ const Login = () => {
   };
 
   if (loading) return <LoadingState />;
-  if (error) return <ErrorState message={error} />;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-blue-900">

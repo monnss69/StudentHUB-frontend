@@ -1,9 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../provider/authProvider";
-import { LogOut } from "lucide-react"; // Using Lucide icons for consistency
+import { LogOut } from "lucide-react";
 import { apiService } from "@/services/api";
-import axios from "axios";
 
 const Logout = () => {
   const navigate = useNavigate();
@@ -11,28 +10,17 @@ const Logout = () => {
 
   const handleLogout = async () => {
     try {
-      // Call backend logout
-      await apiService.logout();
-
-      // Clear frontend state
-      setToken(null);
-
-      // Clear axios state
-      delete axios.defaults.headers.common["Authorization"];
-      axios.defaults.withCredentials = true; // Reset this to default
-
-      // Clear all cookies
-      document.cookie.split(";").forEach(function (c) {
-        document.cookie = c
-          .replace(/^ +/, "")
-          .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
-      });
-
-      navigate("/", { replace: true });
+      const logoutSuccessful = await apiService.logout();
+      
+      if (logoutSuccessful) {
+        setToken(null);
+        navigate("/", { replace: true });
+      }
     } catch (error) {
       console.error("Logout error:", error);
     }
   };
+
 
   return (
     <button
