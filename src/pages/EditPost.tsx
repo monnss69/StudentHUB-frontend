@@ -1,12 +1,17 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiService } from "@/services/api";
 import { useParams } from "react-router-dom";
+import { Post, UpdatePostInput } from "@/types";
 
 const EditPost = () => {
   const { id } = useParams();
-  const [post, setPost] = useState(null);
-  const [formData, setFormData] = useState({
+  if (!id) {
+    throw new Error("Post ID not provided");
+  }
+
+  const [post, setPost] = useState<Post | null>(null);;
+  const [formData, setFormData] = useState<UpdatePostInput>({
     title: '',
     content: '',
   });
@@ -15,7 +20,11 @@ const EditPost = () => {
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const postData = await apiService.getPost(id);
+        const postData: Post | null = await apiService.getPost(id);
+        if (!postData) {
+          throw new Error("Post not found");
+        }
+
         setPost(postData);
         setFormData({
             title: postData.title,
@@ -29,17 +38,21 @@ const EditPost = () => {
   }, [id]);
 
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await apiService.updatePost(post.id, formData);
-      navigate('/posts/' + post.id);
+      if (post) {
+        await apiService.updatePost(post.id, formData);
+        navigate('/posts/' + post.id);
+      } else {
+        console.error("Post is null");
+      }
     } catch (err) {
       console.error("Error updating post:", err);
     }
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,

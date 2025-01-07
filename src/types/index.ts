@@ -39,9 +39,8 @@ export interface CreatePostInput {
 }
 
 export interface UpdatePostInput {
-    title?: string;
-    content?: string;
-    category_id?: string;
+    title: string;
+    content: string;
 }
 
 // Comment related interfaces
@@ -93,4 +92,10 @@ export interface UserProfileSidebarProps {
 
 export interface ProtectedRouteProps {
     children: React.ReactNode;
+}
+
+export interface DecodedToken {
+    sub: string;
+    exp: number;
+    iat: number;
 }

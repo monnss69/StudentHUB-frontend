@@ -5,15 +5,15 @@ import { apiService } from "../services/api";
 import { useAuth } from "../provider/authProvider";
 import LoadingState from "@/components/LoadingState";
 import ErrorState from "@/components/ErrorState";
+import { LoginInput } from "@/types";
 
 const Login = () => {
-  const [formData, setFormData] = useState({ username: "", password: "" });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [formData, setFormData] = useState<LoginInput>({ username: "", password: "" });
+  const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
   const { setToken } = useAuth();
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
@@ -22,8 +22,8 @@ const Login = () => {
         setToken(response.token);
         navigate("/");
       }
-    } catch (err) {
-      setError(err.response?.data?.error || "Failed to login");
+    } catch (err: unknown) {
+      console.error("Error during login:", err);
     } finally {
       setLoading(false);
     }

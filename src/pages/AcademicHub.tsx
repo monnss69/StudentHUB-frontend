@@ -7,7 +7,7 @@ import LoadingState from "@/components/LoadingState";
 import { User, Calendar, BookOpen } from "lucide-react";
 import { useAuth } from "@/provider/authProvider";
 import { jwtDecode } from "jwt-decode";
-import { UserData, Post as PostType } from "../types";
+import { UserData, Post as PostType, DecodedToken } from "../types";
 import UserProfileSidebar from "@/components/UserProfileSidebar";
 
 // Define interface for the data structure returned by the query
@@ -15,13 +15,6 @@ interface QueryData {
   posts: PostType[];
   authorsMap: { [key: string]: UserData };
   currentUser: UserData;
-}
-
-// Define interface for decoded JWT token
-interface DecodedToken {
-  sub: string;
-  exp: number;
-  iat: number;
 }
 
 const AcademicHub: React.FC = () => {

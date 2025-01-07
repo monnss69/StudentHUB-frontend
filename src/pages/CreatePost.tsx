@@ -1,21 +1,21 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useQueryClient } from '@tanstack/react-query';
+import { QueryClient, useQueryClient } from '@tanstack/react-query';
 import { apiService } from "../services/api";
 import { useAuth } from "@/provider/authProvider";
 import { jwtDecode } from "jwt-decode";
 import { QUERY_KEYS } from "@/constants/queryKeys";
 import LoadingState from "@/components/LoadingState";
-import ErrorState from "@/components/ErrorState";
+import { Category, CreatePostInput, DecodedToken, UserData } from "@/types";
 
 const CreatePost = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { token } = useAuth();
-  const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [formData, setFormData] = useState({
+
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [formData, setFormData] = useState<CreatePostInput>({
     title: '',
     content: '',
     category_id: '',
@@ -25,33 +25,42 @@ const CreatePost = () => {
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
-        const decoded = jwtDecode(token);
-        const username = decoded.sub;
-        const [categoryResponse, userResponse] = await Promise.all([
+        const decoded: DecodedToken = jwtDecode(token);
+        const username: string = decoded.sub;
+        if (!username) throw new Error('Error fetching user data');
+
+        const [categoryResponse, userResponse] : [Category[], UserData] = await Promise.all([
           apiService.getCategories(),
           apiService.getUserByUsername(username)
         ]);
         
         setCategories(categoryResponse);
         setFormData(prev => ({ ...prev, author_id: userResponse.id }));
-      } catch (err) {
-        setError(err.message || 'Failed to load necessary data');
+      } catch (err: unknown) {
+        console.error(err);
       }
     };
 
     if (token) fetchInitialData();
   }, [token]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
       await apiService.createPost(formData);
-      const category = categories.find(cat => cat.ID === formData.category_id)?.Name;
-      await queryClient.invalidateQueries([QUERY_KEYS[category.replace(' ', '_')]]);
+      const category = categories.find(cat => cat.id === formData.category_id)?.name;
+      
+      if (!category) {
+        throw new Error('Category not found');
+      }
+
+      await queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS[category.replace(' ', '_')]]
+      });
       navigate(`/post/${category.toLowerCase().replace(' ', '-')}`);
-    } catch (err) {
-      setError(err.message || "Failed to create post");
+    } catch (err: unknown) {
+      console.error(err);
     }
     setLoading(false);
   };
@@ -91,7 +100,7 @@ const CreatePost = () => {
             >
               <option value="">Select a category</option>
               {categories.map((category) => (
-                <option key={category.ID} value={category.ID}>{category.Name}</option>
+                <option key={category.id} value={category.id}>{category.name}</option>
               ))}
             </select>
           </div>

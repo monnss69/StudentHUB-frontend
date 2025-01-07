@@ -4,30 +4,45 @@ import Post from "../components/Post";
 import UploadButton from "../components/UploadButton";
 import { QUERY_KEYS } from "../constants/queryKeys";
 import LoadingState from "@/components/LoadingState";
-import ErrorState from "@/components/ErrorState";
-import { UserData, Post as PostType } from "../types";
+import { User, Calendar, BookOpen } from "lucide-react";
+import { useAuth } from "@/provider/authProvider";
+import { jwtDecode } from "jwt-decode";
+import { UserData, Post as PostType, DecodedToken } from "../types";
+import UserProfileSidebar from "@/components/UserProfileSidebar";
 
 // Define interface for the data structure returned by the query
 interface QueryData {
   posts: PostType[];
   authorsMap: { [key: string]: UserData };
+  currentUser: UserData;
 }
 
 const PlatformSupport: React.FC = () => {
-  // Type-safe React Query implementation
+  const { token } = useAuth();
+  const decoded: DecodedToken | null = token ? jwtDecode(token) : null;
+  const username = decoded?.sub;
+  if (!username) {
+    throw new Error("Failed to decode username from token");
+  }
+
   const { data, isLoading } = useQuery<QueryData, Error>({
     queryKey: QUERY_KEYS.PLATFORM_SUPPORT,
     queryFn: async () => {
-      // Fetch posts with type safety
       const posts: PostType[] = await apiService.getPostsByCategory("Platform Support");
-      
-      // Fetch authors with type safety
       const authors: UserData[] = await Promise.all(
         posts.map(
-          (post: PostType): Promise<UserData> => 
+          (post: PostType): Promise<UserData> =>
             apiService.getUser(post.author_id)
         )
       );
+
+      // Get current user data if logged in
+      const currentUser = await apiService.getUserByUsername(username);
+      
+      // Ensure we got user data
+      if (!currentUser) {
+        throw new Error("Failed to fetch current user data");
+      }
 
       // Type-safe authors map construction
       const authorsMap = authors.reduce<{ [key: string]: UserData }>(
@@ -40,12 +55,13 @@ const PlatformSupport: React.FC = () => {
 
       return {
         posts,
-        authorsMap
+        authorsMap,
+        currentUser,
       };
     },
     staleTime: 0,
     refetchOnMount: true,
-    refetchOnWindowFocus: true
+    refetchOnWindowFocus: true,
   });
 
   if (isLoading) return <LoadingState />;
@@ -59,24 +75,40 @@ const PlatformSupport: React.FC = () => {
     );
   }
 
+  // Type-safe posts counting
+  const userPostsCount: number = data.currentUser
+    ? data.posts.filter((post) => post.author_id === data.currentUser?.id)
+        .length
+    : 0;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-blue-900 p-8">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <h1 className="text-3xl font-bold text-blue-200 mb-8 drop-shadow-[0_0_10px_rgba(59,130,246,0.3)]">
           Platform Support
         </h1>
-        
-        <div className="space-y-6">
-          {data.posts.map((post) => (
-            <Post 
-              key={post.id}
-              post={post}
-              author={data.authorsMap[post.author_id]}
-            />
-          ))}
+
+        <div className="flex gap-8">
+          <div className="flex-1 space-y-6">
+            {data.posts.map((post) => (
+              <Post
+                key={post.id}
+                post={post}
+                author={data.authorsMap[post.author_id]}
+              />
+            ))}
+            <UploadButton />
+          </div>
+
+          {data.currentUser && (
+            <div className="w-80">
+              <UserProfileSidebar
+                userData={data.currentUser}
+                postsCount={userPostsCount}
+              />
+            </div>
+          )}
         </div>
-        
-        <UploadButton />
       </div>
     </div>
   );
