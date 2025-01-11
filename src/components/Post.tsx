@@ -1,4 +1,4 @@
-import {useState, useEffect} from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { apiService } from "@/services/api";
@@ -9,16 +9,16 @@ interface QueryData {
   comments: Comment[];
 }
 
-const Post = ({ post, author }: {post: PostType, author: UserData}) => {
+const Post = ({ post, author }: { post: PostType; author: UserData }) => {
   const { data, isLoading, error } = useQuery<QueryData, Error>({
     queryKey: ["post", post.id, "comments-and-tags"],
-    
+
     queryFn: async () => {
       const [fetchedTags, fetchedComments] = await Promise.all([
-        apiService.getPostTags(post.id),
+        apiService.getTagByPost(post.id),
         apiService.getPostComments(post.id),
       ]);
-      
+
       return {
         tags: fetchedTags.map((tag: Tag) => tag.name),
         comments: fetchedComments,
@@ -56,7 +56,11 @@ const Post = ({ post, author }: {post: PostType, author: UserData}) => {
           </div>
         </div>
 
-        <p className="text-gray-300 mb-4 leading-relaxed">{post.content}</p>
+        <p className="text-gray-300 mb-4 leading-relaxed">
+          {post.content.length > 250
+            ? `${post.content.slice(0, 250)}...`
+            : post.content}
+        </p>
 
         {/* Tags Section */}
         {
@@ -72,7 +76,7 @@ const Post = ({ post, author }: {post: PostType, author: UserData}) => {
               </span>
             ))}
           </div>
-    }
+        }
 
         <div className="mt-4 pt-4 border-t border-gray-700/50 flex items-center justify-between text-gray-400 text-sm">
           {/* Comments Counter */}

@@ -1,11 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { apiService } from "../services/api";
-import { User, Calendar, Tag, MessageCircle } from "lucide-react";
+import { User, Calendar, Tag, Hash, MessageCircle } from "lucide-react";
 import LoadingState from "@/components/LoadingState.tsx";
 import { useAuth } from "@/provider/authProvider.tsx";
-import {jwtDecode} from "jwt-decode";
-import { CommentWithUser, Post, UserData, DecodedToken, Category } from "@/types";
+import { jwtDecode } from "jwt-decode";
+import {
+  CommentWithUser,
+  Post,
+  UserData,
+  DecodedToken,
+  Category,
+  Tag as TagType,
+} from "@/types";
 
 const PostDetail = () => {
   const { id } = useParams();
@@ -19,6 +26,7 @@ const PostDetail = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [author, setAuthor] = useState<UserData | null>(null);
   const [category, setCategory] = useState<Category | null>(null);
+  const [tags, setTags] = useState<TagType[]>([]);
   const { token } = useAuth();
 
   useEffect(() => {
@@ -45,9 +53,10 @@ const PostDetail = () => {
     const fetchPostData = async () => {
       try {
         setLoading(true);
-        const [postData, commentsData] = await Promise.all([
+        const [postData, commentsData, tagData] = await Promise.all([
           apiService.getPost(id),
           apiService.getPostComments(id),
+          apiService.getTagByPost(id),
         ]);
         const [authorData, categoryData] = await Promise.all([
           apiService.getUser(postData.author_id),
@@ -62,7 +71,8 @@ const PostDetail = () => {
             };
           })
         );
-        
+
+        setTags(tagData);
         setCategory(categoryData);
         setAuthor(authorData);
         setPost(postData);
@@ -77,7 +87,9 @@ const PostDetail = () => {
     if (id) fetchPostData();
   }, [id]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLFormElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLFormElement | HTMLTextAreaElement>
+  ) => {
     e.preventDefault();
     const newCommentData = {
       ...newComment,
@@ -115,11 +127,7 @@ const PostDetail = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-blue-900">
-      {/* Background animation elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-0 left-0 w-96 h-96 bg-blue-500/10 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob" />
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-500/10 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000" />
-      </div>
+      {/* Background animation elements remain the same */}
 
       {/* Main content */}
       <div className="relative px-4 py-12">
@@ -130,7 +138,7 @@ const PostDetail = () => {
               {post.title}
             </h1>
 
-            {/* Author and Date */}
+            {/* Author, Date, and Category */}
             <div className="flex flex-wrap gap-6 mb-6 text-gray-300">
               <div className="flex items-center gap-2">
                 <User className="text-blue-400" size={20} />
@@ -140,7 +148,7 @@ const PostDetail = () => {
                 <Calendar className="text-blue-400" size={20} />
                 <span>{formatDate(post.created_at)}</span>
               </div>
-              {post.category_id && (
+              {category && (
                 <div className="flex items-center gap-2">
                   <Tag className="text-blue-400" size={20} />
                   <span>{category.name}</span>
@@ -148,40 +156,27 @@ const PostDetail = () => {
               )}
             </div>
 
+            {/* Tags Section */}
+            {tags && tags.length > 0 && (
+              <div className="mb-6">
+                <div className="flex flex-wrap gap-2">
+                  {tags.map((tag) => (
+                    <span
+                      key={tag.id}
+                      className="bg-blue-600/20 text-blue-200 px-3 py-1 rounded-full text-sm border border-blue-500/20 hover:bg-blue-600/30 transition-colors duration-200"
+                    >
+                      {tag.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Post Content */}
             <div className="prose prose-invert max-w-none">
               <p className="text-gray-200 whitespace-pre-wrap">
                 {post.content}
               </p>
-            </div>
-          </div>
-
-          <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl shadow-xl border border-blue-900/30 p-6 mb-8">
-            <h2 className="text-2xl font-bold text-blue-200 mb-4 flex items-center gap-2">
-              Add a Comment
-            </h2>
-            <div className="space-y-4">
-              {/* Wrap in a form for better accessibility and Enter key support */}
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <textarea
-                  name="content"
-                  value={newComment.content}
-                  onChange={handleChange}
-                  placeholder="Write your comment here..."
-                  className="w-full bg-gray-900/50 text-white px-4 py-3 rounded-lg border border-blue-900/20 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent min-h-24 resize-y"
-                  required
-                />
-                <div className="flex justify-end">
-                  <button
-                    type="submit" // Add type="submit" for form submission
-                    className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-lg transition-colors duration-200 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                    disabled={isCommentEmpty}
-                  >
-                    <MessageCircle size={18} />
-                    Post Comment
-                  </button>
-                </div>
-              </form>
             </div>
           </div>
 

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { CreateUserInput, CreatePostInput, LoginInput, CreateCommentInput } from '../types';
+import { CreateUserInput, CreatePostInput, LoginInput, CreateCommentInput, Tag } from '../types';
 import { get } from 'http';
 
 const api = axios.create({
@@ -149,22 +149,42 @@ export const apiService = {
     },
 
     // Tag endpoints
-    getPostTags: async (postId: string) => {
-        try {
-            const response = await api.get(`/posts/${postId}/tags`);
-            return response.data;
-        } catch (error) {
-            console.error('Error fetching tags:', error);
-            throw error;
-        }
-    },
-
     getAllTag: async () => {
         try {
             const response = await api.get(`/tags`);
             return response.data;
         } catch (error) {
             console.error('Error fetching tag:', error);
+            throw error;
+        }
+    },
+
+    getTagByPost: async (postId: string) => {
+        try {
+            const response = await api.get(`/posts/${postId}/tags`);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching tag:', error);
+            throw error;
+        }
+    },
+
+    addTagToPost: async (postId: string, tags: Tag[]) => {
+        try {
+            const response = await api.post(`/posts/${postId}/tags`, tags);
+            return response.data;
+        } catch (error) {
+            console.error('Error adding tag to post:', error);
+            throw error;
+        }
+    },
+
+    deleteTagByPost: async (postId: string, tagId: string) => {
+        try {
+            const response = await api.delete(`/posts/${postId}/tags/${tagId}`);
+            return response.data;
+        } catch (error) {
+            console.error('Error deleting tag:', error);
             throw error;
         }
     },
@@ -200,6 +220,7 @@ export const apiService = {
             throw error;
         }
     },
+
     getCategory: async (id: string) => {
         try {
             const response = await api.get(`/categories/${id}`);

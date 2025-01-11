@@ -8,6 +8,7 @@ import { useAuth } from "@/provider/authProvider.tsx";
 import { jwtDecode } from "jwt-decode";
 import { UserData, Post as PostType, DecodedToken } from "../types";
 import UserProfileSidebar from "@/components/UserProfileSidebar.tsx";
+import SearchBar from "@/components/SearchBar.tsx";
 
 // Define interface for the data structure returned by the query
 interface QueryData {
@@ -27,7 +28,9 @@ const AcademicHub: React.FC = () => {
   const { data, isLoading } = useQuery<QueryData, Error>({
     queryKey: QUERY_KEYS.ACADEMIC_HUB,
     queryFn: async () => {
-      const posts: PostType[] = await apiService.getPostsByCategory("Academic Hub");
+      const posts: PostType[] = await apiService.getPostsByCategory(
+        "Academic Hub"
+      );
       const authors: UserData[] = await Promise.all(
         posts.map(
           (post: PostType): Promise<UserData> =>
@@ -37,7 +40,7 @@ const AcademicHub: React.FC = () => {
 
       // Get current user data if logged in
       const currentUser = await apiService.getUserByUsername(username);
-      
+
       // Ensure we got user data
       if (!currentUser) {
         throw new Error("Failed to fetch current user data");
@@ -83,10 +86,22 @@ const AcademicHub: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-blue-900 p-8">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold text-blue-200 mb-8 drop-shadow-[0_0_10px_rgba(59,130,246,0.3)]">
-          Academic Hub
-        </h1>
+        {/* Header Section with Title and Search */}
+        <div className="mb-8 space-y-6">
+          <h1 className="text-3xl font-bold text-blue-200 drop-shadow-[0_0_10px_rgba(59,130,246,0.3)]">
+            Academic Hub
+          </h1>
 
+          {/* Search Section */}
+          <div className="max-w-2xl">
+            <SearchBar
+              onSearch={(term) => console.log("Search term:", term)}
+              placeholder="Search posts..."
+            />
+          </div>
+        </div>
+
+        {/* Main Content Area */}
         <div className="flex gap-8">
           <div className="flex-1 space-y-6">
             {data.posts.map((post) => (
