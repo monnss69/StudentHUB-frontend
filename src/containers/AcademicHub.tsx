@@ -1,13 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { apiService } from "../services/api";
-import { Post } from "../components/post";
-import { UploadButton } from "../components/post";
 import { QUERY_KEYS } from "../constants/queryKeys";
-import { LoadingState } from "../components/common";
 import { useAuth } from "../context/authProvider.tsx";
 import { jwtDecode } from "jwt-decode";
 import { UserData, Post as PostType, DecodedToken } from "../types";
-import { UserProfileSidebar } from "../components/profile";
+import LoadingState from "@/components/common/LoadingState.tsx";
+import Post from "@/components/post/Post.tsx";
+import UploadButton from "@/components/post/UploadButton.tsx";
+import UserProfileSidebar from "@/components/profile/UserProfileSidebar.tsx";
 
 // Define interface for the data structure returned by the query
 interface QueryData {

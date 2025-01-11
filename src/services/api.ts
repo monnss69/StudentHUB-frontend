@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { CreateUserInput, CreatePostInput, LoginInput, CreateCommentInput } from '../types';
-import { get } from 'http';
 
 const api = axios.create({
     baseURL: "https://studenthub-backend.vercel.app",

@@ -1,6 +1,6 @@
 import React from 'react'
 import { User, Calendar, BookOpen } from 'lucide-react';
-import { UserProfileSidebarProps } from '../types';
+import { UserProfileSidebarProps } from '@/types';
 
 const UserProfileSidebar: React.FC<UserProfileSidebarProps> = ({ userData, postsCount, category }) => {
     // Type-safe date formatting function

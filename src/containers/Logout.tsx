@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../provider/authProvider.tsx";
 import { LogOut } from "lucide-react";
 import { apiService } from "@/services/api";
+import { useAuth } from "@/context/authProvider";
 
 const Logout = () => {
   const navigate = useNavigate();

@@ -5,8 +5,8 @@ import { apiService } from "../services/api";
 import { useAuth } from "../context/authProvider.tsx";
 import { jwtDecode } from "jwt-decode";
 import { QUERY_KEYS } from "../constants/queryKeys";
-import { LoadingState } from "../components/common";
 import { Category, CreatePostInput, DecodedToken, UserData } from "../types";
+import LoadingState from "@/components/common/LoadingState.tsx";
 
 const CreatePost = () => {
   const queryClient = useQueryClient();

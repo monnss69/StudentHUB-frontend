@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { apiService } from "../services/api";
+import { apiService } from "@/services/api";
 import { User, Calendar, Tag, MessageCircle } from "lucide-react";
-import LoadingState from "@/components/LoadingState.tsx";
-import { useAuth } from "@/provider/authProvider.tsx";
 import {jwtDecode} from "jwt-decode";
 import { CommentWithUser, Post, UserData, DecodedToken, Category } from "@/types";
+import { useAuth } from "@/context/authProvider";
+import LoadingState from "../common/LoadingState";
 
 const PostDetail = () => {
   const { id } = useParams();

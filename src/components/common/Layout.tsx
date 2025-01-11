@@ -1,6 +1,6 @@
+import Logout from "@/containers/Logout";
+import { useAuth } from "@/context/authProvider";
 import { Link, Outlet } from "react-router-dom";
-import { useAuth } from "../provider/authProvider.tsx";
-import Logout from "../pages/Logout";
 
 const Layout = () => {
   const { isAuthenticated } = useAuth();

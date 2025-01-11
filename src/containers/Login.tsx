@@ -3,8 +3,8 @@ import { User, Lock, GraduationCap } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { apiService } from "../services/api";
 import { useAuth } from "../context/authProvider.tsx";
-import { LoadingState } from "../components/common";
 import { LoginInput } from "../types";
+import LoadingState from "@/components/common/LoadingState.tsx";
 
 const Login = () => {
   const [formData, setFormData] = useState<LoginInput>({ username: "", password: "" });

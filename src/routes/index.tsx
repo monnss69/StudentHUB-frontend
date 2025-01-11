@@ -1,9 +1,6 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { useAuth } from "../context/authProvider.tsx";
 import { ProtectedRoute } from "./ProtectedRoute.tsx";
-import { Layout } from '../components/common';
-import { PostDetail } from '../components/post';
-import { ErrorState } from '../components/common';
 import Home from '../containers/Home.tsx';
 import Login from '../containers/Login.tsx';
 import Register from '../containers/Register.tsx';
@@ -13,6 +10,9 @@ import PlatformSupport from '../containers/PlatformSupport.tsx';
 import CreatePost from '../containers/CreatePost.tsx';
 import MyProfile from "../containers/MyProfile.tsx";
 import EditPost from "../containers/EditPost.tsx";
+import ErrorState from "@/components/common/ErrorState.tsx";
+import PostDetail from "@/components/post/PostDetail.tsx";
+import Layout from "@/components/common/Layout.tsx";
 
 const Routes = () => {
   const { isAuthenticated } = useAuth();

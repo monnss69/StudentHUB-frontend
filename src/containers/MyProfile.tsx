@@ -3,9 +3,9 @@ import { useState, useEffect } from 'react';
 import { apiService } from '../services/api';
 import { jwtDecode } from 'jwt-decode';
 import { User, Mail, Calendar, Edit } from 'lucide-react';
-import { LoadingState } from '../components/common';
 import { useNavigate } from 'react-router-dom';
 import { DecodedToken, Post, UserData } from '../types';
+import LoadingState from '@/components/common/LoadingState.tsx';
 
 const MyProfile = () => {
     const { token } = useAuth();
