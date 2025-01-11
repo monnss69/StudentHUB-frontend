@@ -1,24 +1,35 @@
 import {useState, useEffect} from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { apiService } from "@/services/api";
-import { Post as PostType, UserData, Comment } from "@/types";
+import { Post as PostType, UserData, Comment, Tag } from "@/types";
+
+interface QueryData {
+  tags: string[];
+  comments: Comment[];
+}
 
 const Post = ({ post, author }: {post: PostType, author: UserData}) => {
-  // Create a state to store comments
-  const [comments, setComments] = useState<Comment[]>([]);
+  const { data, isLoading, error } = useQuery<QueryData, Error>({
+    queryKey: ["post", post.id, "comments-and-tags"],
+    
+    queryFn: async () => {
+      const [fetchedTags, fetchedComments] = await Promise.all([
+        apiService.getPostTags(post.id),
+        apiService.getPostComments(post.id),
+      ]);
+      
+      return {
+        tags: fetchedTags.map((tag: Tag) => tag.name),
+        comments: fetchedComments,
+      };
+    },
+    staleTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+  });
 
-  useEffect(() => {
-    const fetchComments = async () => {
-      try {
-        const fetchedComments = await apiService.getPostComments(post.id);
-        setComments(fetchedComments);
-      } catch (error) {
-        console.error("Failed to fetch comments:", error);
-      }
-    };
-
-    fetchComments();
-  }, [post.id]); // Only re-fetch if post.id changes
+  const { tags = [], comments = [] } = data || {};
 
   return (
     <Link to={`/posts/${post.id}`} className="block mb-6">
@@ -47,7 +58,24 @@ const Post = ({ post, author }: {post: PostType, author: UserData}) => {
 
         <p className="text-gray-300 mb-4 leading-relaxed">{post.content}</p>
 
-        <div className="mt-4 pt-4 border-t border-gray-700/50 flex items-center text-gray-400 text-sm">
+        {/* Tags Section */}
+        {
+          <div className="flex flex-wrap gap-2 mb-4">
+            {tags.map((tag, index) => (
+              <span
+                key={index}
+                className="px-2.5 py-1 text-xs font-medium rounded-full
+                         bg-blue-900/30 text-blue-200 border border-blue-800/30
+                         hover:bg-blue-800/40 transition-colors duration-200"
+              >
+                #{tag}
+              </span>
+            ))}
+          </div>
+    }
+
+        <div className="mt-4 pt-4 border-t border-gray-700/50 flex items-center justify-between text-gray-400 text-sm">
+          {/* Comments Counter */}
           <span className="flex items-center group hover:text-blue-400 transition-colors cursor-pointer">
             <svg
               className="w-5 h-5 mr-1 group-hover:stroke-blue-400 transition-colors"

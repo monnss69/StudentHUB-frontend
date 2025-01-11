@@ -36,11 +36,19 @@ export interface CreatePostInput {
     content: string;
     category_id: string;
     author_id: string;
+    tags: Tag[];
 }
 
 export interface UpdatePostInput {
     title: string;
     content: string;
+}
+
+// Tag related interfaces
+export interface Tag {
+    id: string;
+    name: string;
+    created_at: string;
 }
 
 // Comment related interfaces

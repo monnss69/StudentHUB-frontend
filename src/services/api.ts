@@ -15,11 +15,11 @@ api.interceptors.request.use((config) => {
         .split("; ")
         .find((row) => row.startsWith("token="))
         ?.split("=")[1];
-    
+
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }
-    
+
     return config;
 });
 
@@ -94,7 +94,13 @@ export const apiService = {
     // Post endpoints
     createPost: async (post: CreatePostInput) => {
         try {
-            const response = await api.post('/posts', post);
+            const response = await api.post('/posts', {
+                title: post.title,
+                content: post.content,
+                category_id: post.category_id,
+                author_id: post.author_id
+            });
+            const response2 = await api.post(`/posts/${response.data.id}/tags`, { tags: post.tags });
             return response.data;
         } catch (error) {
             console.error('Error creating post:', error);
@@ -138,6 +144,27 @@ export const apiService = {
             return response.data;
         } catch (error) {
             console.error('Error deleting post:', error);
+            throw error;
+        }
+    },
+
+    // Tag endpoints
+    getPostTags: async (postId: string) => {
+        try {
+            const response = await api.get(`/posts/${postId}/tags`);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching tags:', error);
+            throw error;
+        }
+    },
+
+    getAllTag: async () => {
+        try {
+            const response = await api.get(`/tags`);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching tag:', error);
             throw error;
         }
     },
