@@ -2,11 +2,11 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from '@tanstack/react-query';
 import { apiService } from "../services/api";
-import { useAuth } from "@/provider/authProvider.tsx";
+import { useAuth } from "../context/authProvider.tsx";
 import { jwtDecode } from "jwt-decode";
-import { QUERY_KEYS } from "@/constants/queryKeys";
-import LoadingState from "@/components/LoadingState.tsx";
-import { Category, CreatePostInput, DecodedToken, UserData } from "@/types";
+import { QUERY_KEYS } from "../constants/queryKeys";
+import { LoadingState } from "../components/common";
+import { Category, CreatePostInput, DecodedToken, UserData } from "../types";
 
 const CreatePost = () => {
   const queryClient = useQueryClient();

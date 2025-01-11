@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { apiService } from "@/services/api";
+import { apiService } from "../services/api";
 import { useParams } from "react-router-dom";
-import { Post, UpdatePostInput } from "@/types";
+import { Post, UpdatePostInput } from "../types";
 
 const EditPost = () => {
   const { id } = useParams();

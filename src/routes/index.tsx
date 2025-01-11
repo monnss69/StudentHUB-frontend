@@ -1,18 +1,18 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import { useAuth } from "../provider/authProvider.tsx";
+import { useAuth } from "../context/authProvider.tsx";
 import { ProtectedRoute } from "./ProtectedRoute.tsx";
-import Layout from '../components/Layout.tsx';
-import Home from '../pages/Home.tsx';
-import Login from '../pages/Login.tsx';
-import Register from '../pages/Register.tsx';
-import AcademicHub from '../pages/AcademicHub.tsx';
-import CampusCommunity from '../pages/CampusCommunity.tsx';
-import PlatformSupport from '../pages/PlatformSupport.tsx';
-import CreatePost from '../pages/CreatePost.tsx';
-import MyProfile from "../pages/MyProfile.tsx";
-import PostDetail from "../components/PostDetail.tsx";
-import EditPost from "@/pages/EditPost.tsx";
-import ErrorState from "@/components/ErrorState.tsx";
+import { Layout } from '../components/common';
+import { PostDetail } from '../components/post';
+import { ErrorState } from '../components/common';
+import Home from '../containers/Home.tsx';
+import Login from '../containers/Login.tsx';
+import Register from '../containers/Register.tsx';
+import AcademicHub from '../containers/AcademicHub.tsx';
+import CampusCommunity from '../containers/CampusCommunity.tsx';
+import PlatformSupport from '../containers/PlatformSupport.tsx';
+import CreatePost from '../containers/CreatePost.tsx';
+import MyProfile from "../containers/MyProfile.tsx";
+import EditPost from "../containers/EditPost.tsx";
 
 const Routes = () => {
   const { isAuthenticated } = useAuth();

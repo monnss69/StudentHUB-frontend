@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { useAuth } from "@/provider/authProvider.tsx";
+import { useAuth } from "../context/authProvider.tsx";
 
 const Home = () => {
   const { isAuthenticated } = useAuth();

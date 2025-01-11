@@ -1,4 +1,4 @@
-import { AuthProvider } from "./provider/authProvider.tsx";
+import { AuthProvider } from "./context/authProvider.tsx";
 import Routes from "./routes/index.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
