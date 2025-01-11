@@ -100,7 +100,7 @@ export const apiService = {
                 category_id: post.category_id,
                 author_id: post.author_id
             });
-            const response2 = await api.post(`/posts/${response.data.id}/tags`, { tags: post.tags });
+            const response2 = await api.post(`/posts/${response.data.id}/tags`, post.tags);
             return response.data;
         } catch (error) {
             console.error('Error creating post:', error);
