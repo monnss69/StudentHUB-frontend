@@ -13,6 +13,12 @@ export interface UserData extends BaseEntity {
     avatar_url: string;
 }
 
+export interface EditData {
+    username: string;
+    email: string;
+    avatar_url: string;
+}
+
 export interface CreateUserInput {
     username: string;
     email: string;

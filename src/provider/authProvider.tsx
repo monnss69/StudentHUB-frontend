@@ -12,10 +12,6 @@ const getCookie = (name: string): string | null => {
   return cookieValue ? decodeURIComponent(cookieValue) : null;
 };
 
-const setSecureCookie = (name: string, value: string, maxAge = 86400): void => {
-  document.cookie = `${name}=${value}; path=/; max-age=${maxAge}; SameSite=Lax`;
-};
-
 const clearCookie = (name: string): void => {
   document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT`;
 };
@@ -62,7 +58,6 @@ export const AuthProvider = ({ children }: {children: React.ReactNode}) => {
     try {
       configureAxios(savedToken);
       setToken_(savedToken);
-      setSecureCookie("token", savedToken);
     } catch (error) {
       console.error("Token validation failed:", error);
       setToken_(null);
@@ -76,13 +71,13 @@ export const AuthProvider = ({ children }: {children: React.ReactNode}) => {
   // Token setter function that manages all storage locations
   const setToken = (newToken: string | null): void => {
     if (newToken) {
-      setSecureCookie("token", newToken);
       configureAxios(newToken);
       setToken_(newToken);
     } else {
       clearCookie("token");
       configureAxios(null);
       setToken_(null);
+      validateToken();
     }
   };
 

@@ -2,9 +2,9 @@ import { useAuth } from '@/provider/authProvider.tsx';
 import { useState, useEffect } from 'react';
 import { apiService } from '@/services/api';
 import { jwtDecode } from 'jwt-decode';
-import { User, Mail, Calendar, Edit } from 'lucide-react';
+import { User, Mail, Calendar, Edit, Settings } from 'lucide-react';
 import LoadingState from '@/components/LoadingState.tsx';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { DecodedToken, Post, UserData } from '@/types';
 
 const MyProfile = () => {
@@ -22,7 +22,7 @@ const MyProfile = () => {
                 if (!username) throw new Error('Invalid token data');
                 const userData: UserData = await apiService.getUserByUsername(username);
                 const userPosts: Post[] = await apiService.getUserPosts(userData.id);
-                
+
                 setUser(userData);
                 setPosts(userPosts);
                 setLoading(false);
@@ -57,22 +57,37 @@ const MyProfile = () => {
                 {/* Profile Section - Left Side */}
                 <div className="lg:col-span-4">
                     <div className="sticky top-8">
-                        <h1 className="text-3xl font-bold mb-6 text-blue-400">
-                            My Profile
-                        </h1>
+                        <div className="flex justify-between items-center mb-6">
+                            <h1 className="text-3xl font-bold text-blue-400">
+                                My Profile
+                            </h1>
+                            <Link
+                                to="/edit-profile"
+                                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r 
+                                         from-blue-600 to-indigo-700 rounded-lg shadow-lg 
+                                         hover:shadow-blue-500/50 transform hover:-translate-y-0.5 
+                                         transition-all duration-200 ring-1 ring-blue-400/30"
+                            >
+                                <Settings className="w-4 h-4" />
+                                <span>Edit Profile</span>
+                            </Link>
+                        </div>
 
                         <div className="bg-gray-800 rounded-xl p-6 ring-1 ring-blue-400/20">
                             {/* Avatar Section */}
                             <div className="flex flex-col items-center mb-6">
-                                <div className="w-48 h-48 rounded-full overflow-hidden ring-4 ring-blue-400/30 mb-4">
-                                    <img 
-                                        src={user.avatar_url} 
-                                        alt={`${user.username}'s avatar`}
-                                        className="w-full h-full object-cover"
-                                    />
+                                <div className="relative w-48 h-48">
+                                    <div className="w-full h-full rounded-full overflow-hidden ring-4 ring-blue-400/30">
+                                        <img
+                                            src={user.avatar_url}
+                                            alt={`${user.username}'s avatar`}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </div>
                                 </div>
                             </div>
 
+                            {/* User Info Cards - Keep existing structure */}
                             <div className="flex items-center gap-4 mb-6 p-4 bg-gray-900/50 rounded-lg">
                                 <User className="text-blue-400" size={24} />
                                 <div>
@@ -102,7 +117,7 @@ const MyProfile = () => {
                     </div>
                 </div>
 
-                {/* Posts Section - Right Side */}
+                {/* Posts Section - Right Side (Keep existing code) */}
                 <div className="lg:col-span-8">
                     <div className="bg-gray-800 rounded-xl p-6 ring-1 ring-blue-400/20">
                         <h2 className="text-2xl font-semibold mb-6 text-blue-400">My Posts</h2>
@@ -138,5 +153,6 @@ const MyProfile = () => {
         </div>
     );
 };
+
 
 export default MyProfile;

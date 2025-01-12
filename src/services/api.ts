@@ -1,6 +1,8 @@
 import axios from 'axios';
-import { CreateUserInput, CreatePostInput, LoginInput, CreateCommentInput, Tag } from '../types';
+import { CreateUserInput, CreatePostInput, LoginInput, CreateCommentInput, Tag, EditData } from '../types';
+import { v2 as cloudinary } from 'cloudinary';
 import { get } from 'http';
+import { useAuth } from '@/provider/authProvider';
 
 const api = axios.create({
     baseURL: "https://studenthub-backend.vercel.app",
@@ -22,6 +24,20 @@ api.interceptors.request.use((config) => {
 
     return config;
 });
+
+const clearAuthCookies = () => {
+    const domains = ['localhost', 'studenthub-backend.vercel.app'];
+    const cookieOptions = [
+        'Path=/',
+        'Expires=Thu, 01 Jan 1970 00:00:01 GMT',
+        'Secure',
+        'SameSite=None'
+    ];
+
+    domains.forEach(domain => {
+        document.cookie = `token=; Domain=${domain}; ${cookieOptions.join('; ')}`;
+    });
+};
 
 export const apiService = {
     // User endpoints
@@ -65,6 +81,16 @@ export const apiService = {
         }
     },
 
+    updateUser: async (id: string, user: EditData) => {
+        try {
+            const response = await api.put(`/users/${id}`, user);
+            return response.data;
+        } catch (error) {
+            console.error('Error updating user:', error);
+            throw error;
+        }
+    },
+
     // Authentication endpoints
     login: async (credentials: LoginInput) => {
         try {
@@ -80,8 +106,8 @@ export const apiService = {
         try {
             const userConfirm = window.confirm('Are you sure you want to logout?');
             if (userConfirm) {
-                // Just make the request - the cookie will be sent automatically
                 await api.post('/logout');
+                clearAuthCookies();
                 return true;
             }
             return false;
@@ -91,6 +117,17 @@ export const apiService = {
         }
     },
 
+    logoutAfterEdit: async () => {
+        try {
+            await api.post('/logout');
+            clearAuthCookies();
+            return true;
+        } catch (error) {
+            console.error('Error during logout:', error);
+            throw error;
+        }
+    },
+    
     // Post endpoints
     createPost: async (post: CreatePostInput) => {
         try {
@@ -229,5 +266,43 @@ export const apiService = {
             console.error('Error fetching category:', error);
             throw error;
         }
-    }
+    },
+
+    uploadImage: async (file: File, username: string) => {
+        try {
+            // Create FormData to send the file
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('username', username);
+
+            // We need to override the default content-type to handle multipart form data
+            const response = await api.post('/api/upload', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            // The backend will return { url: "cloudinary_url" }
+            return response.data.url;
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            // Propagate the error for proper handling in components
+            throw error instanceof Error
+                ? error
+                : new Error('Failed to upload image');
+        }
+    },
+
+    // Updated image removal function to use backend endpoint
+    removeImage: async (username: string) => {
+        try {
+            const response = await api.delete(`/api/upload/${username}`);
+            return response.data.message; // Backend returns { message: "Image deleted successfully" }
+        } catch (error) {
+            console.error('Error removing image:', error);
+            throw error instanceof Error
+                ? error
+                : new Error('Failed to remove image');
+        }
+    },
 };
