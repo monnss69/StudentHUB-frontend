@@ -55,7 +55,7 @@ const Routes = () => {
       errorElement: <ErrorState message="Failed to load Platform Support" />
     },
     {
-      path: '/posts/:id',
+      path: '/post/:id',
       element: <PostDetail />,
       errorElement: <ErrorState message="Failed to load post" />
     },

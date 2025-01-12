@@ -112,3 +112,22 @@ export interface DecodedToken {
     exp: number;
     iat: number;
 }
+
+export interface SearchBarProps {
+    onSearch?: (searchTerm: string) => void;
+    placeholder?: string;
+}
+
+
+export interface QueryData {
+    posts: Post[];
+    authorsMap: { [key: string]: UserData };
+    currentUser: UserData;
+}
+
+export interface FeedProps {
+    category: string;
+    queryKey: [string, string];
+    title: string;
+    sidebarCategory: "Academic" | "Community" | "Support";
+}

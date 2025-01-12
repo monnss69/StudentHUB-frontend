@@ -100,7 +100,7 @@ const EditPost = () => {
           await apiService.addTagToPost(post.id, tagAdding);
         }
         setIsLoading(false);
-        navigate('/posts/' + post.id);
+        navigate('/post/' + post.id);
       } else {
         console.error("Post is null");
       }

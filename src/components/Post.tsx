@@ -32,7 +32,7 @@ const Post = ({ post, author }: { post: PostType; author: UserData }) => {
   const { tags = [], comments = [] } = data || {};
 
   return (
-    <Link to={`/posts/${post.id}`} className="block mb-6">
+    <Link to={`/post/${post.id}`} className="block mb-6">
       <div
         className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 shadow-lg 
                  border border-blue-900/30 hover:border-blue-700/50 transition-all duration-300
