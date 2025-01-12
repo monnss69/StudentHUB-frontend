@@ -35,11 +35,18 @@ const Post = ({ post, author }: { post: PostType; author: UserData }) => {
     <Link to={`/post/${post.id}`} className="block mb-6">
       <div
         className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 shadow-lg 
-                 border border-blue-900/30 hover:border-blue-700/50 transition-all duration-300
-                 hover:shadow-blue-900/20 hover:shadow-xl"
+                   border border-blue-900/30 hover:border-blue-700/50 transition-all duration-300
+                   hover:shadow-blue-900/20 hover:shadow-xl"
       >
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-blue-400/30">
+              <img
+                src={author.avatar_url}
+                alt={`${author.username}'s avatar`}
+                className="w-full h-full object-cover"
+              />
+            </div>
             <div>
               <h2 className="font-semibold text-lg text-blue-200">
                 {post.title}

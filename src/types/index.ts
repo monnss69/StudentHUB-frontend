@@ -10,12 +10,14 @@ export interface UserData extends BaseEntity {
     username: string;
     email: string;
     password_hash: string;
+    avatar_url: string;
 }
 
 export interface CreateUserInput {
     username: string;
     email: string;
     password_hash: string;
+    avatar_url: string;
 }
 
 export interface LoginInput {
@@ -60,6 +62,7 @@ export interface Comment extends BaseEntity {
 
 export interface CommentWithUser extends Comment {
     user: string
+    avatar_url: string;
 }
 
 export interface CreateCommentInput {

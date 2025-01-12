@@ -29,6 +29,7 @@ const PostDetail = () => {
   const [tags, setTags] = useState<TagType[]>([]);
   const { token } = useAuth();
 
+  // Fetch user ID from token
   useEffect(() => {
     const fetchAuthorID = async () => {
       const decoded: DecodedToken | null = token ? jwtDecode(token) : null;
@@ -68,6 +69,7 @@ const PostDetail = () => {
             return {
               ...comment,
               user: userData.username,
+              avatar_url: userData.avatar_url,
             };
           })
         );
@@ -141,7 +143,7 @@ const PostDetail = () => {
             {/* Author, Date, and Category */}
             <div className="flex flex-wrap gap-6 mb-6 text-gray-300">
               <div className="flex items-center gap-2">
-                <User className="text-blue-400" size={20} />
+                <img src={author.avatar_url} alt="Author Avatar" className="w-8 h-8 rounded-full" />
                 <span>{author.username || "Unknown Author"}</span>
               </div>
               <div className="flex items-center gap-2">
@@ -180,6 +182,34 @@ const PostDetail = () => {
             </div>
           </div>
 
+          {/* Comment Form */}
+          <form
+            onSubmit={handleSubmit}
+            className="bg-gray-800/50 backdrop-blur-sm rounded-xl shadow-xl border border-blue-900/30 p-8 mb-8"
+          >
+            <h2 className="text-2xl font-bold text-blue-200 mb-6 flex items-center gap-2">
+              <MessageCircle className="text-blue-400" size={24} />
+              Add a Comment
+            </h2>
+
+            <textarea
+              onChange={handleChange}
+              value={newComment.content}
+              placeholder="Write your comment here..."
+              className="w-full bg-gray-900/50 rounded-lg p-4 border border-blue-900/20 text-gray-200"
+            ></textarea>
+
+            <button
+              type="submit"
+              disabled={isCommentEmpty}
+              className={`mt-4 px-6 py-2 rounded-md bg-blue-500 hover:bg-blue-600 transition-colors ${
+                isCommentEmpty ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+            >
+              Post Comment
+            </button>
+          </form>
+
           {/* Comments Section */}
           <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl shadow-xl border border-blue-900/30 p-8">
             <h2 className="text-2xl font-bold text-blue-200 mb-6 flex items-center gap-2">
@@ -194,7 +224,7 @@ const PostDetail = () => {
                   className="bg-gray-900/50 rounded-lg p-4 border border-blue-900/20"
                 >
                   <div className="flex items-center gap-2 mb-2 text-gray-400">
-                    <User className="text-blue-400" size={16} />
+                    <img src={comment.avatar_url} alt="User Avatar" className="w-5 h-5 rounded-full" />
                     <span>{comment.user}</span>
                     <span className="text-gray-600">•</span>
                     <span className="text-sm">
