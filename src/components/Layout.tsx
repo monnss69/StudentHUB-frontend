@@ -1,12 +1,14 @@
 import { Link, Outlet } from "react-router-dom";
 import { useAuth } from "../provider/authProvider.tsx";
+import { Github, Linkedin, Mail } from 'lucide-react';
 import Logout from "../pages/Logout";
 
 const Layout = () => {
   const { isAuthenticated } = useAuth();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-blue-900">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-blue-900 flex flex-col">
+      {/* Navigation Bar */}
       <nav className="bg-gray-900/80 backdrop-blur-sm border-b border-blue-900/50 shadow-lg relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
@@ -73,9 +75,50 @@ const Layout = () => {
           </div>
         </div>
       </nav>
-      <main className="w-full">
+
+      {/* Main Content */}
+      <main className="flex-1 w-full">
         <Outlet />
       </main>
+
+      {/* Developer Credits Footer */}
+      <footer className="bg-gray-900/80 backdrop-blur-sm border-t border-blue-900/50 mt-auto">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+            <div className="text-gray-400 text-sm">
+              <p>Developed by <span className="text-blue-400 font-medium">Pham Hai Minh</span></p>
+              <p className="text-gray-500 text-xs mt-1">It's a good day to code!</p>
+            </div>
+            <div className="flex items-center space-x-4">
+              <a
+                href="https://github.com/monnss69"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white transition-colors"
+                aria-label="GitHub"
+              >
+                <Github size={20} />
+              </a>
+              <a
+                href="https://linkedin.com/in/yourusername"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white transition-colors"
+                aria-label="LinkedIn"
+              >
+                <Linkedin size={20} />
+              </a>
+              <a
+                href="mailto:e1375556@u.nus.edu"
+                className="text-gray-400 hover:text-white transition-colors"
+                aria-label="Email"
+              >
+                <Mail size={20} />
+              </a>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
