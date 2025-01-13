@@ -202,7 +202,7 @@ const EditUser = () => {
         // Small delay to ensure cookies are cleared before reload
         setTimeout(() => {
           window.location.href = "/login"; // Redirect to login page
-        }, 500);
+        }, 1000);
       }
     } catch (error) {
       console.error("Error updating user:", error);

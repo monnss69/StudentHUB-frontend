@@ -13,6 +13,7 @@ import {
   Category,
   Tag as TagType,
 } from "@/types";
+import { useNavigate } from "react-router-dom";
 
 const PostDetail = () => {
   const { id } = useParams();
@@ -27,6 +28,7 @@ const PostDetail = () => {
   const [author, setAuthor] = useState<UserData | null>(null);
   const [category, setCategory] = useState<Category | null>(null);
   const [tags, setTags] = useState<TagType[]>([]);
+  const navigate = useNavigate();
   const { token } = useAuth();
 
   // Fetch user ID from token
@@ -102,10 +104,12 @@ const PostDetail = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     try {
       await apiService.createComment(id, newComment);
-      window.location.reload();
+      navigate(`/post/${id}`);
       setNewComment({ ...newComment, content: "" });
+      setLoading(false);
     } catch (err) {
       console.error("Error posting comment:", err);
     }
