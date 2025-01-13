@@ -1,6 +1,7 @@
 import { AuthContextType } from "@/types";
 import axios from "axios";
 import { createContext, useContext, useState, useEffect } from "react";
+import { apiService } from "@/services/api";
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -16,90 +17,34 @@ const clearCookie = (name: string): void => {
   document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT`;
 };
 
-export const AuthProvider = ({ children }: {children: React.ReactNode}) => {
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [token, setToken_] = useState<string | null>(() => {
-    return getCookie("token");
+    const savedToken = getCookie("token");
+    if (savedToken) {
+      // Configure axios with the token
+      axios.defaults.withCredentials = true;
+      axios.defaults.headers.common["Authorization"] = `Bearer ${savedToken}`;
+    }
+    return savedToken;
   });
 
-  useEffect(() => {
-    const handleStorageChange = () => {
-      const currentToken = getCookie("token");
-      if (!currentToken) {
-        setToken_(null);
-        configureAxios(null);
-      }
-    };
-  
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
-  
-  // Configure axios defaults
-  const configureAxios = (token: string | null): void => {
-    if (token) {
-      axios.defaults.withCredentials = true;
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-    } else {
-      delete axios.defaults.headers.common["Authorization"];
-    }
-  };
-
-  // Validate token and set up authentication state
-  const validateToken = async (): Promise<void> => {
-    const savedToken = getCookie("token");
-    if (!savedToken) {
-      setToken_(null);
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      configureAxios(savedToken);
-      setToken_(savedToken);
-    } catch (error) {
-      console.error("Token validation failed:", error);
-      setToken_(null);
-      clearCookie("token");
-      configureAxios(null);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Token setter function that manages all storage locations
-  const setToken = (newToken: string | null): void => {
+  // Set token with proper cookie handling
+  const setToken = (newToken: string | null) => {
     if (newToken) {
-      configureAxios(newToken);
+      // Token will be set by the backend cookie
       setToken_(newToken);
+      axios.defaults.withCredentials = true;
+      axios.defaults.headers.common["Authorization"] = `Bearer ${newToken}`;
     } else {
-      clearCookie("token");
-      configureAxios(null);
       setToken_(null);
-      validateToken();
+      delete axios.defaults.headers.common["Authorization"];
+      // Let the backend handle cookie removal
+      apiService.logout();
     }
   };
-
-  // Run initial token validation
-  useEffect(() => {
-    validateToken();
-  }, []);
-
-  // Derived authentication state
-  const isAuthenticated = Boolean(token);
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
 
   return (
-    <AuthContext.Provider value={{ 
-      token, 
-      setToken, 
-      isAuthenticated,
-      refreshAuth: validateToken
-    }}>
+    <AuthContext.Provider value={{ token, setToken, isAuthenticated: !!token }}>
       {children}
     </AuthContext.Provider>
   );
