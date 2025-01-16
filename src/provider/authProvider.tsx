@@ -1,70 +1,56 @@
 import { AuthContextType } from "@/types";
 import axios from "axios";
 import { createContext, useContext, useState, useEffect } from "react";
-import { apiService } from "@/services/api";
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-// Helper function to safely get cookie value
-const getCookie = (name: string): string | null => {
-  try {
-    return document.cookie
-      .split('; ')
-      .find(row => row.startsWith(`${name}=`))
-      ?.split('=')[1]
-      ?.trim() || null;
-  } catch (error) {
-    console.error('Error reading cookie:', error);
-    return null;
-  }
-};
-
-// Helper function to set cookie with proper attributes for cross-origin usage
-const setCookie = (name: string, value: string) => {
-  // Set cookie with same attributes as backend for consistency
-  document.cookie = `${name}=${value}; path=/; domain=studenthub-backend.vercel.app; secure=true; samesite=none; max-age=9999999`;
-};
-
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  // Initialize authentication state based on presence of Authorization header
   const [token, setToken_] = useState<string | null>(() => {
-    const savedToken = getCookie("token");
-    if (savedToken) {
-      // Configure axios with the token on initial load
-      axios.defaults.withCredentials = true;
-      axios.defaults.headers.common["Authorization"] = `Bearer ${savedToken}`;
+    // Check if axios has an Authorization header set
+    const authHeader = axios.defaults.headers.common["Authorization"];
+    if (authHeader && typeof authHeader === "string") {
+      return authHeader.split(" ")[1];
     }
-    return savedToken;
+    return null;
   });
 
-  // Sync cookie with token state and ensure persistence
-  useEffect(() => {
-    const cookieToken = getCookie("token");
-    
-    // If there's a token in state but not in cookie, restore the cookie
-    if (token && !cookieToken) {
-      setCookie("token", token);
-    }
-    // If there's a cookie but no token in state, update state
-    else if (cookieToken && !token) {
-      setToken_(cookieToken);
-      axios.defaults.withCredentials = true;
-      axios.defaults.headers.common["Authorization"] = `Bearer ${cookieToken}`;
-    }
-  }, [token]);
-
+  // Enhanced token management
   const setToken = (newToken: string | null) => {
     if (newToken) {
+      // When we receive a new token, set up axios defaults
       setToken_(newToken);
       axios.defaults.withCredentials = true;
       axios.defaults.headers.common["Authorization"] = `Bearer ${newToken}`;
     } else {
+      // When logging out, clean up axios defaults
       setToken_(null);
       delete axios.defaults.headers.common["Authorization"];
-      // Clear cookie on logout
-      document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-      apiService.logout();
     }
   };
+
+  // Effect to handle authentication state consistency
+  useEffect(() => {
+    // Configure global axios defaults
+    axios.defaults.withCredentials = true;
+    
+    // Set up axios response interceptor to handle 401 errors
+    const interceptor = axios.interceptors.response.use(
+      response => response,
+      error => {
+        if (error.response?.status === 401) {
+          // If we get an unauthorized response, clear the token
+          setToken(null);
+        }
+        return Promise.reject(error);
+      }
+    );
+
+    // Cleanup interceptor on unmount
+    return () => {
+      axios.interceptors.response.eject(interceptor);
+    };
+  }, []);
 
   return (
     <AuthContext.Provider value={{ token, setToken, isAuthenticated: !!token }}>

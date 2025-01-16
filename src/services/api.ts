@@ -2,7 +2,7 @@ import axios from 'axios';
 import { CreateUserInput, CreatePostInput, LoginInput, CreateCommentInput, Tag, EditData } from '../types';
 
 const api = axios.create({
-    baseURL: "https://studenthub-backend.vercel.app/api",
+    baseURL: "https://studenthub-backend.vercel.app",
     withCredentials: true,
     headers: {
         'Content-Type': 'application/json',
