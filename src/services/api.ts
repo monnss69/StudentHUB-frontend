@@ -1,11 +1,8 @@
 import axios from 'axios';
 import { CreateUserInput, CreatePostInput, LoginInput, CreateCommentInput, Tag, EditData } from '../types';
-import { v2 as cloudinary } from 'cloudinary';
-import { get } from 'http';
-import { useAuth } from '@/provider/authProvider';
 
 const api = axios.create({
-    baseURL: "https://studenthub-backend.vercel.app",
+    baseURL: "https://studenthub-backend.vercel.app/api",
     withCredentials: true,
     headers: {
         'Content-Type': 'application/json',
@@ -276,7 +273,7 @@ export const apiService = {
             formData.append('username', username);
 
             // We need to override the default content-type to handle multipart form data
-            const response = await api.post('/api/upload', formData, {
+            const response = await api.post('/upload', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -296,7 +293,7 @@ export const apiService = {
     // Updated image removal function to use backend endpoint
     removeImage: async (username: string) => {
         try {
-            const response = await api.delete(`/api/upload/${username}`);
+            const response = await api.delete(`/upload/${username}`);
             return response.data.message; // Backend returns { message: "Image deleted successfully" }
         } catch (error) {
             console.error('Error removing image:', error);
