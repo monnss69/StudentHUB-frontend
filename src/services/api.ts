@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { CreateUserInput, CreatePostInput, LoginInput, CreateCommentInput, Tag, EditData } from '../types';
 
+// Create axios instance with base configuration
 const api = axios.create({
     baseURL: "https://studenthub-backend.vercel.app",
     withCredentials: true,
@@ -9,32 +10,31 @@ const api = axios.create({
     }
 });
 
+// Request interceptor to handle auth token
 api.interceptors.request.use((config) => {
-    const token = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("token="))
-        ?.split("=")[1];
-
+    // Get token from localStorage
+    const token = localStorage.getItem('auth_token');
+    
+    // If token exists, add it to the headers
     if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+        config.headers['Authorization'] = `Bearer ${token}`;
     }
-
+    
     return config;
+}, (error) => {
+    return Promise.reject(error);
 });
 
-const clearAuthCookies = () => {
-    const domains = ['localhost', 'studenthub-backend.vercel.app'];
-    const cookieOptions = [
-        'Path=/',
-        'Expires=Thu, 01 Jan 1970 00:00:01 GMT',
-        'Secure',
-        'SameSite=None'
-    ];
-
-    domains.forEach(domain => {
-        document.cookie = `token=; Domain=${domain}; ${cookieOptions.join('; ')}`;
-    });
-};
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response?.status === 401) {
+            // Clear token on authentication errors
+            localStorage.removeItem('auth_token');
+        }
+        return Promise.reject(error);
+    }
+);
 
 export const apiService = {
     // User endpoints
@@ -92,24 +92,39 @@ export const apiService = {
     login: async (credentials: LoginInput) => {
         try {
             const response = await api.post('/login', credentials);
+            const { token } = response.data;
+            
+            // Store token in localStorage
+            if (token) {
+                localStorage.setItem('auth_token', token);
+            }
+            
             return response.data;
         } catch (error) {
-            console.error('Error during login:', error);
+            console.error('Login error:', error);
             throw error;
         }
     },
 
     logout: async () => {
         try {
-            const userConfirm = window.confirm('Are you sure you want to logout?');
-            if (userConfirm) {
-                await api.post('/logout');
-                clearAuthCookies();
-                return true;
-            }
-            return false;
+            const response = await api.post('/logout');
+            // Clear token on successful logout
+            localStorage.removeItem('auth_token');
+            return response.data;
         } catch (error) {
-            console.error('Error during logout:', error);
+            console.error('Logout error:', error);
+            throw error;
+        }
+    },
+
+    // Token synchronization
+    syncToken: async (token: string) => {
+        try {
+            const response = await api.post('/api/auth/sync', { token });
+            return response.data;
+        } catch (error) {
+            console.error('Token sync error:', error);
             throw error;
         }
     },
@@ -117,7 +132,8 @@ export const apiService = {
     logoutAfterEdit: async () => {
         try {
             await api.post('/logout');
-            clearAuthCookies();
+            // Clear token on successful logout
+            localStorage.removeItem('auth_token');
             return true;
         } catch (error) {
             console.error('Error during logout:', error);
@@ -273,7 +289,7 @@ export const apiService = {
             formData.append('username', username);
 
             // We need to override the default content-type to handle multipart form data
-            const response = await api.post('/upload', formData, {
+            const response = await api.post('/api/upload', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -293,7 +309,7 @@ export const apiService = {
     // Updated image removal function to use backend endpoint
     removeImage: async (username: string) => {
         try {
-            const response = await api.delete(`/upload/${username}`);
+            const response = await api.delete(`/api/upload/${username}`);
             return response.data.message; // Backend returns { message: "Image deleted successfully" }
         } catch (error) {
             console.error('Error removing image:', error);
