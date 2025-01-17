@@ -1,4 +1,4 @@
-import { useAuth } from "@/provider/authProvider";
+import { useAuth } from "@/auth/authProvider";
 import React, { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import { DecodedToken, UserData, EditData } from "@/types";

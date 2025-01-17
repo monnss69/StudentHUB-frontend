@@ -1,7 +1,7 @@
 import { Link, Outlet } from "react-router-dom";
-import { useAuth } from "../provider/authProvider.tsx";
+import { useAuth } from "../../auth/authProvider.tsx";
 import { Github, Linkedin, Mail } from 'lucide-react';
-import Logout from "../pages/Logout";
+import Logout from "../../containers/PageAuthentication/Logout/index.tsx";
 
 const Layout = () => {
   const { isAuthenticated } = useAuth();
@@ -47,7 +47,7 @@ const Layout = () => {
                 <>
                   <Logout />
                   <Link
-                    to="/my-profile"
+                    to="/profile"
                     className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors
                              ring-1 ring-blue-500/50 hover:ring-blue-400"
                   >
@@ -100,7 +100,7 @@ const Layout = () => {
                 <Github size={20} />
               </a>
               <a
-                href="https://linkedin.com/in/yourusername"
+                href="https://www.linkedin.com/in/ph%E1%BA%A1m-h%E1%BA%A3i-minh-74950829b/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-white transition-colors"
@@ -110,6 +110,8 @@ const Layout = () => {
               </a>
               <a
                 href="mailto:e1375556@u.nus.edu"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-gray-400 hover:text-white transition-colors"
                 aria-label="Email"
               >

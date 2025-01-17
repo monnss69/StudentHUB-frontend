@@ -1,45 +1,68 @@
-import { useAuth } from '@/provider/authProvider.tsx';
+import { useAuth } from '@/auth/authProvider';
 import { useState, useEffect } from 'react';
 import { apiService } from '@/services/api';
 import { jwtDecode } from 'jwt-decode';
 import { User, Mail, Calendar, Edit, Settings } from 'lucide-react';
-import LoadingState from '@/components/LoadingState.tsx';
-import { useNavigate, Link } from 'react-router-dom';
+import LoadingState from '@/components/CommonState/LoadingState';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import { DecodedToken, Post, UserData } from '@/types';
 
-const MyProfile = () => {
+const PageProfile = () => {
+    const { id } = useParams();
     const { token } = useAuth();
     const navigate = useNavigate();
     const [user, setUser] = useState<UserData | null>(null);
+    const [username, setUsername] = useState<string | null>(null);
     const [posts, setPosts] = useState<Post[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
 
+    // Fetch username based on token or ID if provided
     useEffect(() => {
-        const fetchUserAndPosts = async () => {
+        const fetchData = async () => {
             try {
-                const decoded: DecodedToken | null = token ? jwtDecode(token) : null;
-                const username = decoded?.sub;
-                if (!username) throw new Error('Invalid token data');
-                const userData: UserData = await apiService.getUserByUsername(username);
-                const userPosts: Post[] = await apiService.getUserPosts(userData.id);
+                // Step 1: Get username
+                let fetchedUsername: string | undefined;
+                
+                if (id) {
+                    const userData: UserData = await apiService.getUser(id);
+                    fetchedUsername = userData.username;
+                } else {
+                    const decoded: DecodedToken | null = token ? jwtDecode(token) : null;
+                    fetchedUsername = decoded?.sub;
+                }
+    
+                if (!fetchedUsername) {
+                    setLoading(false);
+                    return;
+                }
 
-                setUser(userData);
-                setPosts(userPosts);
-                setLoading(false);
+                setUsername(fetchedUsername);
+
+                // Step 2: Only proceed with user and posts fetch if we have a token
+                if (token) {
+                    const userData: UserData = await apiService.getUserByUsername(fetchedUsername);
+                    const userPosts: Post[] = await apiService.getUserPosts(userData.id);
+    
+                    setUser(userData);
+                    setPosts(userPosts);
+                }
             } catch (err) {
+                console.error('Error fetching data:', err);
                 setUser(null);
+            } finally {
                 setLoading(false);
-                console.error('Error fetching user data:', err);
             }
         };
+    
+        fetchData();
+    }, [id, token]);
 
-        if (token) fetchUserAndPosts();
-    }, [token]);
-
+    // If click on edit post button, navigate to edit post page based on post ID
     const handleEditPost = (postId: string) => {
         navigate(`/edit-post/${postId}`);
     };
 
+    // Format date string to human-readable format
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString('en-US', {
             year: 'numeric',
@@ -48,6 +71,7 @@ const MyProfile = () => {
         });
     };
 
+    // Render loading state while fetching data
     if (loading) return <LoadingState />;
     if (!user) return null;
 
@@ -59,9 +83,10 @@ const MyProfile = () => {
                     <div className="sticky top-8">
                         <div className="flex justify-between items-center mb-6">
                             <h1 className="text-3xl font-bold text-blue-400">
-                                My Profile
+                                {id ? `${username}'s Profile` : 'My Profile'}
                             </h1>
-                            <Link
+
+                            {!id && <Link
                                 to="/edit-profile"
                                 className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r 
                                          from-blue-600 to-indigo-700 rounded-lg shadow-lg 
@@ -70,7 +95,7 @@ const MyProfile = () => {
                             >
                                 <Settings className="w-4 h-4" />
                                 <span>Edit Profile</span>
-                            </Link>
+                            </Link>}
                         </div>
 
                         <div className="bg-gray-800 rounded-xl p-6 ring-1 ring-blue-400/20">
@@ -120,7 +145,7 @@ const MyProfile = () => {
                 {/* Posts Section - Right Side (Keep existing code) */}
                 <div className="lg:col-span-8">
                     <div className="bg-gray-800 rounded-xl p-6 ring-1 ring-blue-400/20">
-                        <h2 className="text-2xl font-semibold mb-6 text-blue-400">My Posts</h2>
+                        <h2 className="text-2xl font-semibold mb-6 text-blue-400">{id ? `${username}'s Posts` : 'My Posts'}</h2>
                         {posts.length === 0 ? (
                             <p className="text-blue-200/70 text-center py-4">No posts yet</p>
                         ) : (
@@ -131,18 +156,18 @@ const MyProfile = () => {
                                             <h3 className="text-lg font-medium text-blue-100">
                                                 {post.title}
                                             </h3>
-                                            <button
+                                            {!id && <button
                                                 onClick={() => handleEditPost(post.id)}
                                                 className="flex items-center gap-2 px-3 py-1 rounded-md bg-blue-500 hover:bg-blue-600 transition-colors"
                                             >
                                                 <Edit size={16} />
                                                 <span>Edit</span>
-                                            </button>
+                                            </button>}
                                         </div>
                                         <p className="text-blue-200/70 text-sm mb-2">
                                             {formatDate(post.created_at)}
                                         </p>
-                                        <p className="text-blue-100">{post.content}</p>
+                                        <p className="text-blue-100">{post.content.length > 250 ? `${post.content.slice(0, 250)}...` : post.content}</p>
                                     </div>
                                 ))}
                             </div>
@@ -155,4 +180,4 @@ const MyProfile = () => {
 };
 
 
-export default MyProfile;
+export default PageProfile;

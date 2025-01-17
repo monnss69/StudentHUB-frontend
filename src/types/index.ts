@@ -67,6 +67,7 @@ export interface Comment extends BaseEntity {
 }
 
 export interface CommentWithUser extends Comment {
+    user_id: string;
     user: string
     avatar_url: string;
 }
@@ -131,11 +132,4 @@ export interface QueryData {
     posts: Post[];
     authorsMap: { [key: string]: UserData };
     currentUser: UserData;
-}
-
-export interface FeedProps {
-    category: string;
-    queryKey: [string, string];
-    title: string;
-    sidebarCategory: "Academic" | "Community" | "Support";
 }

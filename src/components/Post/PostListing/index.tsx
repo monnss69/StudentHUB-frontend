@@ -1,36 +1,14 @@
-import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { apiService } from "@/services/api";
-import { Post as PostType, UserData, Comment, Tag } from "@/types";
+import { Post as PostType, UserData, Comment } from "@/types";
 
-interface QueryData {
+interface PostProps {
+  post: PostType;
+  author: UserData;
   tags: string[];
   comments: Comment[];
 }
 
-const Post = ({ post, author }: { post: PostType; author: UserData }) => {
-  const { data, isLoading, error } = useQuery<QueryData, Error>({
-    queryKey: ["post", post.id, "comments-and-tags"],
-
-    queryFn: async () => {
-      const [fetchedTags, fetchedComments] = await Promise.all([
-        apiService.getTagByPost(post.id),
-        apiService.getPostComments(post.id),
-      ]);
-
-      return {
-        tags: fetchedTags.map((tag: Tag) => tag.name),
-        comments: fetchedComments,
-      };
-    },
-    staleTime: 0,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
-  });
-
-  const { tags = [], comments = [] } = data || {};
-
+const PostListing = ({ post, author, tags, comments }: PostProps) => {
   return (
     <Link to={`/post/${post.id}`} className="block mb-6">
       <div
@@ -41,11 +19,13 @@ const Post = ({ post, author }: { post: PostType; author: UserData }) => {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-blue-400/30">
+            <Link to={`/profile/${author.id}`}>
               <img
                 src={author.avatar_url}
                 alt={`${author.username}'s avatar`}
                 className="w-full h-full object-cover"
               />
+            </Link>
             </div>
             <div>
               <h2 className="font-semibold text-lg text-blue-200">
@@ -53,7 +33,7 @@ const Post = ({ post, author }: { post: PostType; author: UserData }) => {
               </h2>
               <p className="text-sm text-gray-400">
                 Posted by{" "}
-                <span className="text-blue-400">{author.username}</span>
+                <Link to={`/profile/${author.id}`}><span className="text-blue-400">{author.username}</span></Link>
                 {" • "}
                 <span className="text-gray-500">
                   {new Date(post.created_at).toLocaleDateString()}
@@ -69,24 +49,20 @@ const Post = ({ post, author }: { post: PostType; author: UserData }) => {
             : post.content}
         </p>
 
-        {/* Tags Section */}
-        {
-          <div className="flex flex-wrap gap-2 mb-4">
-            {tags.map((tag, index) => (
-              <span
-                key={index}
-                className="px-2.5 py-1 text-xs font-medium rounded-full
-                         bg-blue-900/30 text-blue-200 border border-blue-800/30
-                         hover:bg-blue-800/40 transition-colors duration-200"
-              >
-                #{tag}
-              </span>
-            ))}
-          </div>
-        }
+        <div className="flex flex-wrap gap-2 mb-4">
+          {tags.map((tag, index) => (
+            <span
+              key={index}
+              className="px-2.5 py-1 text-xs font-medium rounded-full
+                       bg-blue-900/30 text-blue-200 border border-blue-800/30
+                       hover:bg-blue-800/40 transition-colors duration-200"
+            >
+              #{tag}
+            </span>
+          ))}
+        </div>
 
         <div className="mt-4 pt-4 border-t border-gray-700/50 flex items-center justify-between text-gray-400 text-sm">
-          {/* Comments Counter */}
           <span className="flex items-center group hover:text-blue-400 transition-colors cursor-pointer">
             <svg
               className="w-5 h-5 mr-1 group-hover:stroke-blue-400 transition-colors"
@@ -109,4 +85,4 @@ const Post = ({ post, author }: { post: PostType; author: UserData }) => {
   );
 };
 
-export default Post;
+export default PostListing;

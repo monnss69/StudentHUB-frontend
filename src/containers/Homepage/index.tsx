@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { useAuth } from "@/provider/authProvider.tsx";
+import { useAuth } from "@/auth/authProvider";
 
-const Home = () => {
+const Homepage = () => {
   const { isAuthenticated } = useAuth();
   const letterArray = "StudentHub Singapore".split("");
 
@@ -103,4 +103,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Homepage;
