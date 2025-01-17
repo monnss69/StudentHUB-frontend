@@ -10,12 +10,12 @@ import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import PageFeed from "@/containers/PageFeed";
-import CreatePost from "../pages/CreatePost";
+import PageCreatePost from "@/containers/PageCreatePost";
 import PageProfile from "@/containers/PageProfile";
 import PagePostDetail from "@/containers/PagePostDetail";
-import EditPost from "@/pages/EditPost";
+import PageEditPost from "@/containers/PageEditPost";
 import ErrorState from "@/components/ErrorState";
-import EditUser from "@/components/EditUser";
+import PageEditUser from "@/containers/PageEditUser";
 
 const Routes = () => {
   const { isAuthenticated } = useAuth();
@@ -99,7 +99,7 @@ const Routes = () => {
     {
       path: "/create-post",
       element: isAuthenticated ? (
-        <CreatePost />
+        <PageCreatePost />
       ) : (
         <Navigate to="/login" replace />
       ),
@@ -117,7 +117,7 @@ const Routes = () => {
     {
       path: "/edit-post/:id",
       element: isAuthenticated ? (
-        <EditPost />
+        <PageEditPost />
       ) : (
         <Navigate to="/login" replace />
       ),
@@ -126,7 +126,7 @@ const Routes = () => {
     {
       path: "/edit-profile",
       element: isAuthenticated ? (
-        <EditUser />
+        <PageEditUser />
       ) : (
         <Navigate to="/login" replace />
       ),
