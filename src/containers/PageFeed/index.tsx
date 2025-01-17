@@ -1,12 +1,12 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { apiService } from "../services/api";
-import Post from "../components/Post.tsx";
-import UploadButton from "../components/UploadButton.tsx";
+import { apiService } from "@/services/api";
+import Post from "@/components/Post.tsx";
+import UploadButton from "@/components/UploadButton.tsx";
 import LoadingState from "@/components/LoadingState.tsx";
 import { useAuth } from "@/provider/authProvider.tsx";
 import { jwtDecode } from "jwt-decode";
-import { UserData, Post as PostType, DecodedToken, FeedProps, QueryData } from "../types";
+import { UserData, Post as PostType, DecodedToken, FeedProps, QueryData } from "@/types";
 import UserProfileSidebar from "@/components/UserProfileSidebar.tsx";
 import SearchBar from "@/components/SearchBar.tsx";
 

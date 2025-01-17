@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { apiService } from "../services/api";
-import { User, Calendar, Tag, Hash, MessageCircle } from "lucide-react";
+import { Calendar, Tag, MessageCircle } from "lucide-react";
 import LoadingState from "@/components/LoadingState.tsx";
 import { useAuth } from "@/provider/authProvider.tsx";
 import { jwtDecode } from "jwt-decode";
@@ -16,18 +16,21 @@ import {
 import { useNavigate } from "react-router-dom";
 
 const PostDetail = () => {
+  // Get post ID from URL
   const { id } = useParams();
   if (!id) throw new Error("Invalid post ID");
   const [post, setPost] = useState<Post | null>(null);
+  const [comments, setComments] = useState<CommentWithUser[]>([]); // Each comment will also include user data for better representing the comment
+  const [author, setAuthor] = useState<UserData | null>(null);
+  const [category, setCategory] = useState<Category | null>(null);
+  const [tags, setTags] = useState<TagType[]>([]);
+
+  // New comment state, author_id heres is fetched from token, representing the current logged in user's id
   const [newComment, setNewComment] = useState({
     content: "",
     author_id: "",
   });
-  const [comments, setComments] = useState<CommentWithUser[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [author, setAuthor] = useState<UserData | null>(null);
-  const [category, setCategory] = useState<Category | null>(null);
-  const [tags, setTags] = useState<TagType[]>([]);
   const navigate = useNavigate();
   const { token } = useAuth();
 
@@ -72,6 +75,7 @@ const PostDetail = () => {
               ...comment,
               user: userData.username,
               avatar_url: userData.avatar_url,
+              user_id: userData.id,
             };
           })
         );
@@ -228,8 +232,12 @@ const PostDetail = () => {
                   className="bg-gray-900/50 rounded-lg p-4 border border-blue-900/20"
                 >
                   <div className="flex items-center gap-2 mb-2 text-gray-400">
-                    <img src={comment.avatar_url} alt="User Avatar" className="w-5 h-5 rounded-full" />
-                    <span>{comment.user}</span>
+                    <Link to={`/profile/${comment.user_id}`}>
+                      <img src={comment.avatar_url} alt="User Avatar" className="w-5 h-5 rounded-full" />
+                    </Link>
+                    <Link to={`/profile/${comment.user_id}`}>
+                      {comment.user}
+                    </Link>
                     <span className="text-gray-600">•</span>
                     <span className="text-sm">
                       {formatDate(comment.created_at)}

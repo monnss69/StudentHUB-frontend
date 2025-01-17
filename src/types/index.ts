@@ -67,6 +67,7 @@ export interface Comment extends BaseEntity {
 }
 
 export interface CommentWithUser extends Comment {
+    user_id: string;
     user: string
     avatar_url: string;
 }

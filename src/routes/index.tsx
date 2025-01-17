@@ -9,9 +9,9 @@ import Layout from "../components/Layout";
 import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
-import Feed from "@/components/Feed";
+import Feed from "@/containers/PageFeed";
 import CreatePost from "../pages/CreatePost";
-import MyProfile from "../pages/MyProfile";
+import Profile from "@/containers/PageProfile";
 import PostDetail from "../components/PostDetail";
 import EditPost from "@/pages/EditPost";
 import ErrorState from "@/components/ErrorState";
@@ -106,9 +106,9 @@ const Routes = () => {
       errorElement: <ErrorState message="Failed to create post" />,
     },
     {
-      path: "/my-profile",
+      path: "/profile/:id?",
       element: isAuthenticated ? (
-        <MyProfile />
+        <Profile />
       ) : (
         <Navigate to="/login" replace />
       ),
