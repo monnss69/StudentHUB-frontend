@@ -1,13 +1,16 @@
-import { RouterProvider, createBrowserRouter, Navigate } from "react-router-dom";
+import {
+  RouterProvider,
+  createBrowserRouter,
+  Navigate,
+} from "react-router-dom";
 import { useAuth } from "../provider/authProvider";
-import Layout from '../components/Layout';
-import Home from '../pages/Home';
-import Login from '../pages/Login';
-import Register from '../pages/Register';
-import AcademicHub from '../pages/AcademicHub';
-import CampusCommunity from '../pages/CampusCommunity';
-import PlatformSupport from '../pages/PlatformSupport';
-import CreatePost from '../pages/CreatePost';
+import { QUERY_KEYS } from "@/constants/queryKeys";
+import Layout from "../components/Layout";
+import Home from "../pages/Home";
+import Login from "../pages/Login";
+import Register from "../pages/Register";
+import Feed from "@/components/Feed";
+import CreatePost from "../pages/CreatePost";
 import MyProfile from "../pages/MyProfile";
 import PostDetail from "../components/PostDetail";
 import EditPost from "@/pages/EditPost";
@@ -23,7 +26,7 @@ const Routes = () => {
       path: "/",
       element: <Home />,
       errorElement: <ErrorState message="Something went wrong" />,
-    }
+    },
   ];
 
   // Routes only accessible when not authenticated
@@ -31,57 +34,104 @@ const Routes = () => {
     {
       path: "/login",
       element: !isAuthenticated ? <Login /> : <Navigate to="/" replace />,
-      errorElement: <ErrorState message="Authentication error" />
+      errorElement: <ErrorState message="Authentication error" />,
     },
     {
       path: "/register",
       element: !isAuthenticated ? <Register /> : <Navigate to="/" replace />,
-      errorElement: <ErrorState message="Registration error" />
-    }
+      errorElement: <ErrorState message="Registration error" />,
+    },
   ];
 
   // Routes that require authentication
   const protectedRoutes = [
     {
       path: "/post/academic-hub",
-      element: isAuthenticated ? <AcademicHub /> : <Navigate to="/login" replace />,
-      errorElement: <ErrorState message="Failed to load Academic Hub" />
+      element: isAuthenticated ? (
+        <Feed
+          category="Academic Hub"
+          queryKey={QUERY_KEYS.ACADEMIC_HUB}
+          title="Academic Hub"
+          sidebarCategory="Academic"
+        />
+      ) : (
+        <Navigate to="/login" replace />
+      ),
+      errorElement: <ErrorState message="Failed to load Academic Hub" />,
     },
     {
       path: "/post/campus-community",
-      element: isAuthenticated ? <CampusCommunity /> : <Navigate to="/login" replace />,
-      errorElement: <ErrorState message="Failed to load Campus Community" />
+      element: isAuthenticated ? (
+        <Feed
+          category="Campus Community"
+          queryKey={QUERY_KEYS.CAMPUS_COMMUNITY}
+          title="Campus Community"
+          sidebarCategory="Community"
+        />
+      ) : (
+        <Navigate to="/login" replace />
+      ),
+      errorElement: <ErrorState message="Failed to load Campus Community" />,
     },
     {
       path: "/post/platform-support",
-      element: isAuthenticated ? <PlatformSupport /> : <Navigate to="/login" replace />,
-      errorElement: <ErrorState message="Failed to load Platform Support" />
+      element: isAuthenticated ? (
+        <Feed
+          category="Platform Support"
+          queryKey={QUERY_KEYS.PLATFORM_SUPPORT}
+          title="Platform Support"
+          sidebarCategory="Support"
+        />
+      ) : (
+        <Navigate to="/login" replace />
+      ),
+      errorElement: <ErrorState message="Failed to load Platform Support" />,
     },
     {
-      path: '/post/:id',
-      element: isAuthenticated ? <PostDetail /> : <Navigate to="/login" replace />,
-      errorElement: <ErrorState message="Failed to load post" />
+      path: "/post/:id",
+      element: isAuthenticated ? (
+        <PostDetail />
+      ) : (
+        <Navigate to="/login" replace />
+      ),
+      errorElement: <ErrorState message="Failed to load post" />,
     },
     {
       path: "/create-post",
-      element: isAuthenticated ? <CreatePost /> : <Navigate to="/login" replace />,
-      errorElement: <ErrorState message="Failed to create post" />
+      element: isAuthenticated ? (
+        <CreatePost />
+      ) : (
+        <Navigate to="/login" replace />
+      ),
+      errorElement: <ErrorState message="Failed to create post" />,
     },
     {
       path: "/my-profile",
-      element: isAuthenticated ? <MyProfile /> : <Navigate to="/login" replace />,
-      errorElement: <ErrorState message="Failed to load profile" />
+      element: isAuthenticated ? (
+        <MyProfile />
+      ) : (
+        <Navigate to="/login" replace />
+      ),
+      errorElement: <ErrorState message="Failed to load profile" />,
     },
     {
       path: "/edit-post/:id",
-      element: isAuthenticated ? <EditPost /> : <Navigate to="/login" replace />,
-      errorElement: <ErrorState message="Failed to edit post" />
+      element: isAuthenticated ? (
+        <EditPost />
+      ) : (
+        <Navigate to="/login" replace />
+      ),
+      errorElement: <ErrorState message="Failed to edit post" />,
     },
     {
       path: "/edit-profile",
-      element: isAuthenticated ? <EditUser /> : <Navigate to="/login" replace />,
-      errorElement: <ErrorState message="Failed to edit profile" />
-    }
+      element: isAuthenticated ? (
+        <EditUser />
+      ) : (
+        <Navigate to="/login" replace />
+      ),
+      errorElement: <ErrorState message="Failed to edit profile" />,
+    },
   ];
 
   const router = createBrowserRouter([
@@ -96,10 +146,10 @@ const Routes = () => {
         // Catch-all route for 404
         {
           path: "*",
-          element: <ErrorState message="Page not found" />
-        }
-      ]
-    }
+          element: <ErrorState message="Page not found" />,
+        },
+      ],
+    },
   ]);
 
   return <RouterProvider router={router} />;
