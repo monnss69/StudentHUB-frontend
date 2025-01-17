@@ -110,6 +110,8 @@ const Layout = () => {
               </a>
               <a
                 href="mailto:e1375556@u.nus.edu"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-gray-400 hover:text-white transition-colors"
                 aria-label="Email"
               >
