@@ -12,7 +12,7 @@ import Register from "../pages/Register";
 import PageFeed from "@/containers/PageFeed";
 import CreatePost from "../pages/CreatePost";
 import PageProfile from "@/containers/PageProfile";
-import PostDetail from "../components/PostDetail";
+import PagePostDetail from "@/containers/PagePostDetail";
 import EditPost from "@/pages/EditPost";
 import ErrorState from "@/components/ErrorState";
 import EditUser from "@/components/EditUser";
@@ -90,7 +90,7 @@ const Routes = () => {
     {
       path: "/post/:id",
       element: isAuthenticated ? (
-        <PostDetail />
+        <PagePostDetail />
       ) : (
         <Navigate to="/login" replace />
       ),
