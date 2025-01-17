@@ -3,18 +3,18 @@ import {
   createBrowserRouter,
   Navigate,
 } from "react-router-dom";
-import { useAuth } from "../provider/authProvider";
+import { useAuth } from "../auth/authProvider";
 import { QUERY_KEYS } from "@/constants/queryKeys";
 import Layout from "../components/Layout";
-import Home from "../pages/Home";
-import Login from "../pages/Login";
-import Register from "../pages/Register";
+import Homepage from "@/containers/Homepage";
+import Login from "../containers/PageAuthentication/Login";
+import Register from "../containers/PageAuthentication/Register";
 import PageFeed from "@/containers/PageFeed";
 import PageCreatePost from "@/containers/PageCreatePost";
 import PageProfile from "@/containers/PageProfile";
 import PagePostDetail from "@/containers/PagePostDetail";
 import PageEditPost from "@/containers/PageEditPost";
-import ErrorState from "@/components/ErrorState";
+import ErrorState from "@/components/CommonState/ErrorState";
 import PageEditUser from "@/containers/PageEditUser";
 
 const Routes = () => {
@@ -24,7 +24,7 @@ const Routes = () => {
   const publicRoutes = [
     {
       path: "/",
-      element: <Home />,
+      element: <Homepage />,
       errorElement: <ErrorState message="Something went wrong" />,
     },
   ];

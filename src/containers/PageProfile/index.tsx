@@ -1,9 +1,9 @@
-import { useAuth } from '@/provider/authProvider.tsx';
+import { useAuth } from '@/auth/authProvider';
 import { useState, useEffect } from 'react';
 import { apiService } from '@/services/api';
 import { jwtDecode } from 'jwt-decode';
 import { User, Mail, Calendar, Edit, Settings } from 'lucide-react';
-import LoadingState from '@/components/LoadingState.tsx';
+import LoadingState from '@/components/CommonState/LoadingState';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { DecodedToken, Post, UserData } from '@/types';
 

@@ -2,10 +2,10 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { apiService } from "@/services/api";
-import { useAuth } from "@/provider/authProvider.tsx";
+import { useAuth } from "@/auth/authProvider";
 import { jwtDecode } from "jwt-decode";
 import { QUERY_KEYS } from "@/constants/queryKeys";
-import LoadingState from "@/components/LoadingState.tsx";
+import LoadingState from "@/components/CommonState/LoadingState";
 import {
   Category,
   CreatePostInput,

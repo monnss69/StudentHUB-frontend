@@ -49,8 +49,12 @@ const PostDetail = ({
             {/* Author, Date, and Category */}
             <div className="flex flex-wrap gap-6 mb-6 text-gray-300">
               <div className="flex items-center gap-2">
+              <Link to={`/profile/${author.id}`}>
                 <img src={author.avatar_url} alt="Author Avatar" className="w-8 h-8 rounded-full" />
+              </Link>
+              <Link to={`/profile/${author.id}`}>
                 <span>{author.username || "Unknown Author"}</span>
+              </Link>
               </div>
               <div className="flex items-center gap-2">
                 <Calendar className="text-blue-400" size={20} />

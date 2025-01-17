@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { apiService } from "@/services/api";
-import { useAuth } from "@/provider/authProvider";
+import { useAuth } from "@/auth/authProvider";
 import { jwtDecode } from "jwt-decode";
-import LoadingState from "@/components/LoadingState";
-import PostDetail from "@/components/PostDetail";
+import LoadingState from "@/components/CommonState/LoadingState";
+import PostDetail from "@/components/Post/PostDetail";
 import { CommentWithUser, Post, UserData, DecodedToken, Category, Tag } from "@/types";
 
 const PagePostDetail = () => {
@@ -21,8 +21,6 @@ const PagePostDetail = () => {
     author_id: "",
   });
   const [loading, setLoading] = useState<boolean>(true);
-  
-  const navigate = useNavigate();
   const { token } = useAuth();
 
   useEffect(() => {
@@ -93,7 +91,7 @@ const PagePostDetail = () => {
     setLoading(true);
     try {
       await apiService.createComment(id, newComment);
-      navigate(`/post/${id}`);
+      window.location.reload();
       setNewComment(prev => ({ ...prev, content: "" }));
     } catch (err) {
       console.error("Error posting comment:", err);

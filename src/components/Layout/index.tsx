@@ -1,7 +1,7 @@
 import { Link, Outlet } from "react-router-dom";
-import { useAuth } from "../provider/authProvider.tsx";
+import { useAuth } from "../../auth/authProvider.tsx";
 import { Github, Linkedin, Mail } from 'lucide-react';
-import Logout from "../pages/Logout";
+import Logout from "../../containers/PageAuthentication/Logout/index.tsx";
 
 const Layout = () => {
   const { isAuthenticated } = useAuth();

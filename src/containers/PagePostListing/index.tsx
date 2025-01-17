@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { apiService } from "@/services/api";
 import { Tag } from "@/types";
 import { PostContainerProps, QueryData } from "./PagePostListing.types";
-import PostListing from "@/components/PostListing";
+import PostListing from "@/components/Post/PostListing";
 
 const PagePostListing = ({ post, author }: PostContainerProps) => {
   const { data, isLoading, error } = useQuery<QueryData, Error>({

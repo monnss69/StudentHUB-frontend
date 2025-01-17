@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { apiService } from "@/services/api";
 import { useParams } from "react-router-dom";
 import { Post, Tag, UpdatePostInput } from "@/types";
-import LoadingState from "@/components/LoadingState";
+import LoadingState from "@/components/CommonState/LoadingState";
 
 const EditPost = () => {
   const { id } = useParams();

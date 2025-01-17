@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { User, Lock, Mail, GraduationCap } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { apiService } from "../services/api";
-import LoadingState from "@/components/LoadingState.tsx";
+import { apiService } from "../../../services/api";
+import LoadingState from "@/components/CommonState/LoadingState";
 
 const Register = () => {
   // Form state management

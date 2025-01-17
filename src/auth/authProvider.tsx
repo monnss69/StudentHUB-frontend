@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 import { AuthContextType, DecodedToken } from "@/types";
 import { apiService } from "@/services/api";
-import LoadingState from "@/components/LoadingState";
+import LoadingState from "@/components/CommonState/LoadingState";
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
