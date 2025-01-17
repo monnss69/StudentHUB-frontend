@@ -133,10 +133,3 @@ export interface QueryData {
     authorsMap: { [key: string]: UserData };
     currentUser: UserData;
 }
-
-export interface FeedProps {
-    category: string;
-    queryKey: [string, string];
-    title: string;
-    sidebarCategory: "Academic" | "Community" | "Support";
-}

@@ -9,9 +9,9 @@ import Layout from "../components/Layout";
 import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
-import Feed from "@/containers/PageFeed";
+import PageFeed from "@/containers/PageFeed";
 import CreatePost from "../pages/CreatePost";
-import Profile from "@/containers/PageProfile";
+import PageProfile from "@/containers/PageProfile";
 import PostDetail from "../components/PostDetail";
 import EditPost from "@/pages/EditPost";
 import ErrorState from "@/components/ErrorState";
@@ -48,7 +48,7 @@ const Routes = () => {
     {
       path: "/post/academic-hub",
       element: isAuthenticated ? (
-        <Feed
+        <PageFeed
           category="Academic Hub"
           queryKey={QUERY_KEYS.ACADEMIC_HUB}
           title="Academic Hub"
@@ -62,7 +62,7 @@ const Routes = () => {
     {
       path: "/post/campus-community",
       element: isAuthenticated ? (
-        <Feed
+        <PageFeed
           category="Campus Community"
           queryKey={QUERY_KEYS.CAMPUS_COMMUNITY}
           title="Campus Community"
@@ -76,7 +76,7 @@ const Routes = () => {
     {
       path: "/post/platform-support",
       element: isAuthenticated ? (
-        <Feed
+        <PageFeed
           category="Platform Support"
           queryKey={QUERY_KEYS.PLATFORM_SUPPORT}
           title="Platform Support"
@@ -108,7 +108,7 @@ const Routes = () => {
     {
       path: "/profile/:id?",
       element: isAuthenticated ? (
-        <Profile />
+        <PageProfile />
       ) : (
         <Navigate to="/login" replace />
       ),

@@ -1,16 +1,17 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiService } from "@/services/api";
-import Post from "@/components/Post.tsx";
+import PagePostListing from "../PagePostListing";
 import UploadButton from "@/components/UploadButton.tsx";
 import LoadingState from "@/components/LoadingState.tsx";
 import { useAuth } from "@/provider/authProvider.tsx";
 import { jwtDecode } from "jwt-decode";
-import { UserData, Post as PostType, DecodedToken, FeedProps, QueryData } from "@/types";
+import { FeedProps } from "./PageFeed.types";
+import { UserData, Post as PostType, DecodedToken, QueryData } from "@/types";
 import UserProfileSidebar from "@/components/UserProfileSidebar.tsx";
 import SearchBar from "@/components/SearchBar.tsx";
 
-const Feed: React.FC<FeedProps> = ({
+const PageFeed: React.FC<FeedProps> = ({
     category,
     queryKey,
     title,
@@ -135,7 +136,7 @@ const Feed: React.FC<FeedProps> = ({
                         {filteredData.posts.length > 0 ? (
                             <>
                                 {filteredData.posts.map((post) => (
-                                    <Post
+                                    <PagePostListing
                                         key={post.id}
                                         post={post}
                                         author={filteredData.authorsMap[post.author_id]}
@@ -165,4 +166,4 @@ const Feed: React.FC<FeedProps> = ({
     );
 };
 
-export default Feed;
+export default PageFeed;

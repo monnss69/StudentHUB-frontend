@@ -7,7 +7,7 @@ import LoadingState from '@/components/LoadingState.tsx';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { DecodedToken, Post, UserData } from '@/types';
 
-const Profile = () => {
+const PageProfile = () => {
     const { id } = useParams();
     const { token } = useAuth();
     const navigate = useNavigate();
@@ -167,7 +167,7 @@ const Profile = () => {
                                         <p className="text-blue-200/70 text-sm mb-2">
                                             {formatDate(post.created_at)}
                                         </p>
-                                        <p className="text-blue-100">{post.content}</p>
+                                        <p className="text-blue-100">{post.content.length > 250 ? `${post.content.slice(0, 250)}...` : post.content}</p>
                                     </div>
                                 ))}
                             </div>
@@ -180,4 +180,4 @@ const Profile = () => {
 };
 
 
-export default Profile;
+export default PageProfile;
