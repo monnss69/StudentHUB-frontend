@@ -46,7 +46,7 @@ const Routes = () => {
   // Routes that require authentication
   const protectedRoutes = [
     {
-      path: "/post/academic-hub",
+      path: "/post/academic-hub/:pageIndex?",
       element: isAuthenticated ? (
         <PageFeed
           category="Academic Hub"
@@ -60,7 +60,7 @@ const Routes = () => {
       errorElement: <ErrorState message="Failed to load Academic Hub" />,
     },
     {
-      path: "/post/campus-community",
+      path: "/post/campus-community/:pageIndex?",
       element: isAuthenticated ? (
         <PageFeed
           category="Campus Community"
@@ -74,7 +74,7 @@ const Routes = () => {
       errorElement: <ErrorState message="Failed to load Campus Community" />,
     },
     {
-      path: "/post/platform-support",
+      path: "/post/platform-support/:pageIndex?",
       element: isAuthenticated ? (
         <PageFeed
           category="Platform Support"

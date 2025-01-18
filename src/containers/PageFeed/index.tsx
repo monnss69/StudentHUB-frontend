@@ -10,6 +10,7 @@ import { FeedProps } from "./PageFeed.types";
 import { UserData, Post as PostType, DecodedToken, QueryData } from "@/types";
 import UserProfileSidebar from "@/components/UserProfileSidebar.tsx";
 import SearchBar from "@/components/SearchBar.tsx";
+import { useParams } from "react-router-dom";
 
 const PageFeed: React.FC<FeedProps> = ({
     category,
@@ -18,6 +19,12 @@ const PageFeed: React.FC<FeedProps> = ({
     sidebarCategory,
 }) => {
     // Primary states
+    const { pageIndex } = useParams();
+    if (!pageIndex) {
+        throw new Error("Failed to get page index from URL");
+    }
+    pageIndex = parseInt(pageIndex, 10) || 0;
+    
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [filteredData, setFilteredData] = useState<QueryData | null>(null);
 
@@ -33,7 +40,7 @@ const PageFeed: React.FC<FeedProps> = ({
     const { data, isLoading } = useQuery<QueryData, Error>({
         queryKey: [queryKey],
         queryFn: async () => {
-            const posts: PostType[] = await apiService.getPostsByCategory(category);
+            const posts: PostType[] = await apiService.getPostsByCategory(category, pageIndex);
             const authorIds = Array.from(new Set(posts.map(post => post.author_id)));
 
             const authors = await Promise.all(
