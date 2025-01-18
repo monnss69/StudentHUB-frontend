@@ -1,16 +1,18 @@
 import axios from 'axios';
 import { CreateUserInput, CreatePostInput, LoginInput, CreateCommentInput, Tag, EditData } from '../types';
 
-// Create axios instance with base configuration
+// Create axios instance with enhanced configuration
 const api = axios.create({
     baseURL: "https://studenthub-backend.vercel.app",
     withCredentials: true,
     headers: {
         'Content-Type': 'application/json',
-    }
+    },
+    // Add timeout to prevent hanging requests
+    timeout: 15000, // 15 seconds should be enough for most operations
 });
 
-// Request interceptor to handle auth token
+// Request interceptor to handle authentication and request preparation
 api.interceptors.request.use((config) => {
     // Get token from localStorage
     const token = localStorage.getItem('auth_token');
@@ -22,16 +24,41 @@ api.interceptors.request.use((config) => {
     
     return config;
 }, (error) => {
+    // If there's an error in request preparation, reject with error
     return Promise.reject(error);
 });
 
+// Response interceptor for handling common response scenarios and retries
 api.interceptors.response.use(
     (response) => response,
-    (error) => {
+    async (error) => {
+        const originalRequest = error.config;
+
+        // Handle 401 Unauthorized errors
         if (error.response?.status === 401) {
-            // Clear token on authentication errors
             localStorage.removeItem('auth_token');
+            window.location.href = '/login';
+            return Promise.reject(error);
         }
+
+        // Handle network errors and timeouts with retry logic
+        if (
+            (error.response?.status === 0 || error.code === 'ECONNABORTED' || !error.response) &&
+            !originalRequest._retry &&
+            originalRequest.method?.toLowerCase() === 'get' // Only retry GET requests
+        ) {
+            originalRequest._retry = true;
+            
+            try {
+                // Wait 1 second before retrying
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                return await api.request(originalRequest);
+            } catch (retryError) {
+                console.error('Retry failed:', retryError);
+                return Promise.reject(retryError);
+            }
+        }
+
         return Promise.reject(error);
     }
 );
