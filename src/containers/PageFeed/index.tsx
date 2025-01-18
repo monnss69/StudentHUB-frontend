@@ -23,8 +23,8 @@ const PageFeed: React.FC<FeedProps> = ({
     if (!pageIndex) {
         throw new Error("Failed to get page index from URL");
     }
-    pageIndex = parseInt(pageIndex, 10) || 0;
-    
+    const numericPageIndex = parseInt(pageIndex, 10) || 0;
+
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [filteredData, setFilteredData] = useState<QueryData | null>(null);
 
@@ -40,7 +40,7 @@ const PageFeed: React.FC<FeedProps> = ({
     const { data, isLoading } = useQuery<QueryData, Error>({
         queryKey: [queryKey],
         queryFn: async () => {
-            const posts: PostType[] = await apiService.getPostsByCategory(category, pageIndex);
+            const posts: PostType[] = await apiService.getPostsByCategory(category, numericPageIndex);
             const authorIds = Array.from(new Set(posts.map(post => post.author_id)));
 
             const authors = await Promise.all(
