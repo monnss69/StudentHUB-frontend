@@ -98,7 +98,7 @@ const CreatePost = () => {
         queryKey: [QUERY_KEYS[category.replace(" ", "_")]],
       });
       
-      navigate(`/post/${category.toLowerCase().replace(" ", "-")}`);
+      navigate(`/post/${category.toLowerCase().replace(" ", "-")}/0`);
     } catch (err: unknown) {
       console.error(err);
     }
