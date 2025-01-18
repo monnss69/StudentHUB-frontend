@@ -22,19 +22,19 @@ const Layout = () => {
               {isAuthenticated && (
                 <div className="hidden sm:flex sm:space-x-4">
                   <Link
-                    to="/post/academic-hub"
+                    to="/post/academic-hub/0"
                     className="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition-colors"
                   >
                     Academic Hub
                   </Link>
                   <Link
-                    to="/post/campus-community"
+                    to="/post/campus-community/0"
                     className="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition-colors"
                   >
                     Campus Community
                   </Link>
                   <Link
-                    to="/post/platform-support"
+                    to="/post/platform-support/0"
                     className="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition-colors"
                   >
                     Platform Support

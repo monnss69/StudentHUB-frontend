@@ -168,9 +168,9 @@ export const apiService = {
         }
     },
 
-    getPostsByCategory: async (category: string) => {
+    getPostsByCategory: async (category: string, pageIndex: number) => {
         try {
-            const response = await api.get(`/posts/category/${category}`);
+            const response = await api.get(`/posts/category/${category}/${pageIndex}`);
             return response.data;
         } catch (error) {
             console.error('Error fetching posts by category:', error);

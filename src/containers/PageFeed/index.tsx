@@ -10,160 +10,172 @@ import { FeedProps } from "./PageFeed.types";
 import { UserData, Post as PostType, DecodedToken, QueryData } from "@/types";
 import UserProfileSidebar from "@/components/UserProfileSidebar.tsx";
 import SearchBar from "@/components/SearchBar.tsx";
+import { useParams } from "react-router-dom";
+import PaginationBar from "@/components/PaginationBar";
 
 const PageFeed: React.FC<FeedProps> = ({
-    category,
-    queryKey,
-    title,
-    sidebarCategory,
+  category,
+  queryKey,
+  title,
+  sidebarCategory,
 }) => {
-    // Primary states
-    const [searchTerm, setSearchTerm] = useState<string>("");
-    const [filteredData, setFilteredData] = useState<QueryData | null>(null);
+  // Primary states
+  const { pageIndex } = useParams();
+  if (!pageIndex) {
+    throw new Error("Failed to get page index from URL");
+  }
+  const numericPageIndex = parseInt(pageIndex, 10) || 0;
 
-    const { token } = useAuth();
-    const decoded: DecodedToken | null = token ? jwtDecode(token) : null;
-    const username = decoded?.sub;
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [filteredData, setFilteredData] = useState<QueryData | null>(null);
 
-    if (!username) {
-        throw new Error("Failed to decode username from token");
-    }
+  const { token } = useAuth();
+  const decoded: DecodedToken | null = token ? jwtDecode(token) : null;
+  const username = decoded?.sub;
 
-    // Main data query - remains unchanged to maintain data integrity
-    const { data, isLoading } = useQuery<QueryData, Error>({
-        queryKey: [queryKey],
-        queryFn: async () => {
-            const posts: PostType[] = await apiService.getPostsByCategory(category);
-            const authorIds = Array.from(new Set(posts.map(post => post.author_id)));
+  if (!username) {
+    throw new Error("Failed to decode username from token");
+  }
 
-            const authors = await Promise.all(
-                authorIds.map((authorId) => apiService.getUser(authorId))
-            );
+  // Main data query - remains unchanged to maintain data integrity
+  const { data, isLoading } = useQuery<QueryData, Error>({
+    queryKey: [queryKey],
+    queryFn: async () => {
+      const posts: PostType[] = await apiService.getPostsByCategory(
+        category,
+        numericPageIndex
+      );
+      const authorIds = Array.from(
+        new Set(posts.map((post) => post.author_id))
+      );
 
-            const currentUser = await apiService.getUserByUsername(username);
+      const authors = await Promise.all(
+        authorIds.map((authorId) => apiService.getUser(authorId))
+      );
 
-            if (!currentUser) {
-                throw new Error("Failed to fetch current user data");
-            }
+      const currentUser = await apiService.getUserByUsername(username);
 
-            const authorsMap = authors.reduce<{ [key: string]: UserData }>(
-                (map, author) => {
-                    map[author.id] = author;
-                    return map;
-                },
-                {}
-            );
+      if (!currentUser) {
+        throw new Error("Failed to fetch current user data");
+      }
 
-            return {
-                posts,
-                authorsMap,
-                currentUser,
-            };
+      const authorsMap = authors.reduce<{ [key: string]: UserData }>(
+        (map, author) => {
+          map[author.id] = author;
+          return map;
         },
-        staleTime: 5000,
-        refetchOnMount: true,
-        refetchOnWindowFocus: true,
-    });
+        {}
+      );
 
-    // Effect to initialize filteredData when data is first loaded
-    useEffect(() => {
-        if (data) {
-            setFilteredData(data);
-        }
-    }, [data]);
+      return {
+        posts,
+        authorsMap,
+        currentUser,
+      };
+    },
+    staleTime: 5000,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+  });
 
-    // Effect to update filteredData when search term changes
-    useEffect(() => {
-        if (!data) return;
+  // Effect to initialize filteredData when data is first loaded
+  useEffect(() => {
+    if (data) {
+      setFilteredData(data);
+    }
+  }, [data]);
 
-        if (!searchTerm) {
-            // If search is empty, restore original data
-            setFilteredData(data);
-            return;
-        }
+  // Effect to update filteredData when search term changes
+  useEffect(() => {
+    if (!data) return;
 
-        // Create new filtered version while keeping original data intact
-        const searchLower = searchTerm.toLowerCase();
-        const filteredPosts = data.posts.filter((post) =>
-            post.title.toLowerCase().includes(searchLower) ||
-            post.content.slice(0, 200).toLowerCase().includes(searchLower)
-        );
-
-        // Update filtered data with new posts array but keep other properties
-        setFilteredData({
-            ...data,
-            posts: filteredPosts,
-        });
-    }, [searchTerm, data]);
-
-    const userPostsCount = useMemo(() => {
-        if (!filteredData?.currentUser || !filteredData.posts) return 0;
-        return filteredData.posts.filter(
-            (post) => post.author_id === filteredData.currentUser?.id
-        ).length;
-    }, [filteredData]);
-
-    if (isLoading) return <LoadingState />;
-
-    if (!filteredData) {
-        return (
-            <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-blue-900 p-8">
-                <div className="max-w-2xl mx-auto bg-gray-800/50 backdrop-blur-sm rounded-lg p-6 border border-blue-900/30">
-                    <p className="text-gray-300 text-center">Error loading data</p>
-                </div>
-            </div>
-        );
+    if (!searchTerm) {
+      // If search is empty, restore original data
+      setFilteredData(data);
+      return;
     }
 
-    return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-blue-900 p-8">
-            <div className="max-w-6xl mx-auto">
-                <div className="mb-8 space-y-6">
-                    <h1 className="text-3xl font-bold text-blue-200 drop-shadow-[0_0_10px_rgba(59,130,246,0.3)]">
-                        {title}
-                    </h1>
-
-                    <div className="max-w-2xl">
-                        <SearchBar
-                            onSearch={setSearchTerm}
-                            placeholder="Search posts..."
-                        />
-                    </div>
-                </div>
-
-                <div className="flex gap-8">
-                    <div className="flex-1 space-y-6">
-                        {filteredData.posts.length > 0 ? (
-                            <>
-                                {filteredData.posts.map((post) => (
-                                    <PagePostListing
-                                        key={post.id}
-                                        post={post}
-                                        author={filteredData.authorsMap[post.author_id]}
-                                    />
-                                ))}
-                                <UploadButton />
-                            </>
-                        ) : (
-                            <div className="bg-gray-800/50 backdrop-blur-sm rounded-lg p-6 border border-blue-900/30">
-                                <p className="text-gray-300 text-center">No posts found</p>
-                            </div>
-                        )}
-                    </div>
-
-                    {filteredData.currentUser && (
-                        <div className="w-80">
-                            <UserProfileSidebar
-                                userData={filteredData.currentUser}
-                                postsCount={userPostsCount}
-                                category={sidebarCategory}
-                            />
-                        </div>
-                    )}
-                </div>
-            </div>
-        </div>
+    // Create new filtered version while keeping original data intact
+    const searchLower = searchTerm.toLowerCase();
+    const filteredPosts = data.posts.filter(
+      (post) =>
+        post.title.toLowerCase().includes(searchLower) ||
+        post.content.slice(0, 200).toLowerCase().includes(searchLower)
     );
+
+    // Update filtered data with new posts array but keep other properties
+    setFilteredData({
+      ...data,
+      posts: filteredPosts,
+    });
+  }, [searchTerm, data]);
+
+  const userPostsCount = useMemo(() => {
+    if (!filteredData?.currentUser || !filteredData.posts) return 0;
+    return filteredData.posts.filter(
+      (post) => post.author_id === filteredData.currentUser?.id
+    ).length;
+  }, [filteredData]);
+
+  if (isLoading) return <LoadingState />;
+
+  if (!filteredData) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-blue-900 p-8">
+        <div className="max-w-2xl mx-auto bg-gray-800/50 backdrop-blur-sm rounded-lg p-6 border border-blue-900/30">
+          <p className="text-gray-300 text-center">Error loading data</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-blue-900 p-8">
+      <div className="max-w-6xl mx-auto">
+        <div className="mb-8 space-y-6">
+          <h1 className="text-3xl font-bold text-blue-200 drop-shadow-[0_0_10px_rgba(59,130,246,0.3)]">
+            {title}
+          </h1>
+
+          <div className="max-w-2xl">
+            <SearchBar onSearch={setSearchTerm} placeholder="Search posts..." />
+          </div>
+        </div>
+
+        <div className="flex gap-8">
+          <div className="flex-1 space-y-6">
+            {filteredData.posts.length > 0 ? (
+              <>
+                {filteredData.posts.map((post) => (
+                  <PagePostListing
+                    key={post.id}
+                    post={post}
+                    author={filteredData.authorsMap[post.author_id]}
+                  />
+                ))}
+                <UploadButton />
+              </>
+            ) : (
+              <div className="bg-gray-800/50 backdrop-blur-sm rounded-lg p-6 border border-blue-900/30">
+                <p className="text-gray-300 text-center">No posts found</p>
+              </div>
+            )}
+            <PaginationBar currentPage={numericPageIndex} category={category} />
+          </div>
+
+          {filteredData.currentUser && (
+            <div className="w-80">
+              <UserProfileSidebar
+                userData={filteredData.currentUser}
+                postsCount={userPostsCount}
+                category={sidebarCategory}
+              />
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default PageFeed;
