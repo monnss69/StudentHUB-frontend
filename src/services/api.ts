@@ -350,7 +350,7 @@ export const apiService = {
             formData.append('username', username);
 
             const response = await retryWithBackoff(() => 
-                api.post('/api/cloudinary/upload', formData, {
+                api.post('/cloudinary/upload', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                     },
@@ -367,7 +367,7 @@ export const apiService = {
     removeImage: async (username: string) => {
         try {
             const response = await retryWithBackoff(() =>
-                api.delete(`/api/cloudinary/upload/${username}`)
+                api.delete(`/cloudinary/upload/${username}`)
             );
             return response.data.message;
         } catch (error) {
