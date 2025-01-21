@@ -167,7 +167,7 @@ export const apiService = {
 
     syncToken: async (token: string) => {
         try {
-            return await api.post('/api/auth/sync', { token });
+            return await api.post('/auth/sync', { token });
         } catch (error) {
             handleApiError(error, 'Token sync');
         }
