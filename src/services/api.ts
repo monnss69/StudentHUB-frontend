@@ -3,7 +3,7 @@ import { CreateUserInput, CreatePostInput, LoginInput, CreateCommentInput, Tag, 
 
 // Configure the base axios instance with sensible defaults
 const api = axios.create({
-    baseURL: "https://studenthub-backend.vercel.app",
+    baseURL: import.meta.env.VITE_API_URL,
     withCredentials: true,
     headers: {
         'Content-Type': 'application/json',
