@@ -25,7 +25,6 @@ Before you begin, ensure you have installed:
 1. Clone the repository:
    ```bash
    git clone https://github.com/monnss69/StudentHUB-frontend
-   cd frontend
    ```
 
 2. Install dependencies:
