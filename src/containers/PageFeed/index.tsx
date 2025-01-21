@@ -29,6 +29,7 @@ const PageFeed: React.FC<FeedProps> = ({
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filteredData, setFilteredData] = useState<QueryData | null>(null);
 
+  // Decode username from token
   const { token } = useAuth();
   const decoded: DecodedToken | null = token ? jwtDecode(token) : null;
   const username = decoded?.sub;

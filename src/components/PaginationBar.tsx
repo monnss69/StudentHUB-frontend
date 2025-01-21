@@ -9,6 +9,8 @@ interface PaginationBarProps {
 const PaginationBar: React.FC<PaginationBarProps> = ({ currentPage, category }) => {
   const navigate = useNavigate();
   const [customPage, setCustomPage] = useState('');
+
+  // Convert category to lowercase and replace spaces with hyphens to match the format in the URL
   category = category.toLowerCase().split(' ').join('-');
 
   // Generate array of page numbers to show (current page and 4 pages before/after)
@@ -23,11 +25,13 @@ const PaginationBar: React.FC<PaginationBarProps> = ({ currentPage, category }) 
   ])).filter(page => page >= 0)
     .sort((a, b) => a - b);
 
+  // Handle page navigation on click
   const handlePageClick = (pageNum: number) => {
     navigate(`/post/${category}/${pageNum}`);
     window.location.reload();
   };
 
+  // Handle custom page number submission
   const handleCustomPageSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const pageNum = parseInt(customPage);

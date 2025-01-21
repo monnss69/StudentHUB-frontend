@@ -53,9 +53,11 @@ const CreatePost = () => {
     }));
   };
 
+  // Fetch categories, user data, and tags on component mount
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
+        // Token is decoded to get the username
         const decoded: DecodedToken | null = token ? jwtDecode(token) : null;
         const username = decoded?.sub;
         if (!username) throw new Error("Error fetching user data");

@@ -22,10 +22,12 @@ const EditPost = () => {
   });
   const navigate = useNavigate();
 
+  // Check if tag is selected to display it in the selected tags section
   const isTagSelected = (tag: Tag) => {
     return tags.some(t => t.id === tag.id) || tagAdding.some(t => t.id === tag.id);
   };
 
+  // Get available tags that are not selected
   const getAvailableTags = () => {
     return allTags.filter(tag => !isTagSelected(tag));
   };
@@ -48,6 +50,7 @@ const EditPost = () => {
     }
   };
 
+  // Get post data and tags on component mount
   useEffect(() => {
     setIsLoading(true);
     const fetchPost = async () => {
